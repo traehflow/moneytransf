@@ -1,0 +1,25 @@
+springdoc:
+  api-docs.path: /api-docs
+spring:
+  jpa:
+    database: POSTGRESQL
+    show-sql: true
+    hibernate:
+      ddl-auto: create-drop
+      dialect: org.hibernate.dialect.PostgreSQLDialect
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    platform: postgres
+    url: jdbc:postgresql://localhost:5432/moneytransf
+    username: postgres
+    password: 123
+    driverClassName: org.postgresql.Driver
+
+javax:
+  persistence:
+    jdbc:
+      url: jdbc:postgresql://localhost:5432/moneytransf
+      platform: postgres
+      username: postgres
+      password: 123
+      driverClassName: org.postgresql.Driver
