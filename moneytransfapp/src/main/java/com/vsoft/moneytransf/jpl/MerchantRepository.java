@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class MerchantRepository {
@@ -19,6 +20,11 @@ public class MerchantRepository {
     public Merchant save(Merchant merchant) {
         entityManager.persist(merchant);
         return merchant;
+    }
+
+    @Transactional
+    public Merchant getById(UUID id) {
+        return entityManager.find(Merchant.class, id);
     }
 
     @Transactional

@@ -18,9 +18,6 @@ import java.util.List;
 @RestController("api/generals")
 public class MerchantController {
     @Autowired
-    MerchantRepository merchantRepository;
-
-    @Autowired
     MerchantsService merchantsService;
 
     @Autowired
@@ -29,32 +26,9 @@ public class MerchantController {
     @Autowired
     CleanupTasks cleanupTasks;
 
-
-    @GetMapping("/save")
-    public void save() {
-        Merchant merchant = new Merchant();
-        merchant.setName("Some merchant");
-        merchant.setDescription("This is a merchant " + System.currentTimeMillis());
-        merchantRepository.save(merchant);
-
-        AuthorizeTransaction aTransaction = new AuthorizeTransaction();
-        aTransaction.setAmount(new BigDecimal("2343.23"));
-        aTransaction.setMerchant(merchant);
-        transactionRepository.save(aTransaction);
-        ChargeTransaction cTransaction = new ChargeTransaction();
-        cTransaction.setAmount(new BigDecimal("1222.12"));
-        cTransaction.setReferencedTransaction(aTransaction);
-        cTransaction.setMerchant(merchant);
-        transactionRepository.save(cTransaction);
-    }
-
     @GetMapping("/list")
     public List<Merchant> list() {
         return merchantsService.listAll();
-    }
-    @GetMapping("/leading")
-    public String leading(){
-        return "some content";
     }
 
     @PostMapping("/forceCleanup")
