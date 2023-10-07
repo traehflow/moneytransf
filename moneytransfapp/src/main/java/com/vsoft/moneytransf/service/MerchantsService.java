@@ -4,20 +4,23 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vsoft.moneytransf.MerchantStatus;
-import com.vsoft.moneytransf.dto.MerchantDTO;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
+import com.vsoft.moneytransf.jpl.entity.MerchRepostitory;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.io.StringReader;
+import java.util.List;
 
 @Service
 public class MerchantsService {
 
     private final MerchantRepository merchantRepository;
-    public MerchantsService(MerchantRepository merchantRepository) {
+    private final MerchRepostitory merchRepostitory;
+    public MerchantsService(MerchantRepository merchantRepository, MerchRepostitory merchRepostitory) {
         this.merchantRepository = merchantRepository;
+        this.merchRepostitory = merchRepostitory;
     }
 
     public void importMerchant(String csvData) throws CsvValidationException, IOException {
@@ -40,5 +43,9 @@ public class MerchantsService {
                 merchantRepository.save(merchant);
             }
         }
+    }
+
+    public List<Merchant> listAll(){
+        return merchRepostitory.findAll();
     }
 }

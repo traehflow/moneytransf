@@ -39,7 +39,7 @@ public class HibernateConf {
         return dataSource;
     }
 
-    @Bean
+    @Bean(name = "transactionManager")
     public PlatformTransactionManager hibernateTransactionManager() {
         HibernateTransactionManager transactionManager
                 = new HibernateTransactionManager();

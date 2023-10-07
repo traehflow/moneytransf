@@ -6,6 +6,7 @@ import com.vsoft.moneytransf.jpl.entity.AuthorizeTransaction;
 import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
+import com.vsoft.moneytransf.service.MerchantsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,6 +19,9 @@ import java.util.List;
 public class MerchantController {
     @Autowired
     MerchantRepository merchantRepository;
+
+    @Autowired
+    MerchantsService merchantsService;
 
     @Autowired
     TransactionRepository transactionRepository;
@@ -45,8 +49,8 @@ public class MerchantController {
     }
 
     @GetMapping("/list")
-    public List<String> list() {
-        return merchantRepository.list();
+    public List<Merchant> list() {
+        return merchantsService.listAll();
     }
     @GetMapping("/leading")
     public String leading(){
