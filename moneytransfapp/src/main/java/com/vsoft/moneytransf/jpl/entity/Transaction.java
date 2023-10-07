@@ -19,6 +19,7 @@ import java.util.UUID;
 @Table(name = "transaction",
         indexes = {@Index(name = "idx_timestamp", columnList = "timestamp")}
 )
+
 @Inheritance(strategy=InheritanceType.SINGLE_TABLE)
 @DiscriminatorColumn(name="transaction_type",
         discriminatorType=DiscriminatorType.STRING
@@ -39,8 +40,14 @@ public class Transaction {
     String customerEmail;
     @Column(name = "customer_phone")
     String customerPhone;
-    @Column(name = "reference_id")
-    String referenceId;
+
+    @ManyToOne
+    @JoinColumn(name = "reference_id", referencedColumnName = "id")
+    Transaction referencedTransaction;
+
+    @ManyToOne
+    @JoinColumn(name = "merchant_id", referencedColumnName = "id")
+    Merchant merchant;
 
     @PrePersist
     protected void onCreate() {

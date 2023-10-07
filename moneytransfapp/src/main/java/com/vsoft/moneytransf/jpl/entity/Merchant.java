@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.Currency;
+import java.util.UUID;
 
 @Data
 @Getter
@@ -19,7 +20,7 @@ public class Merchant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private UUID id;
     @Column(name="name")
     private String name;
     @Column(name="description")
