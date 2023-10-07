@@ -1,8 +1,11 @@
 package com.vsoft.moneytransf.jpl;
 
+import com.vsoft.moneytransf.MerchantNotFoundException;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
 import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.TypedQuery;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
@@ -25,6 +28,20 @@ public class MerchantRepository {
     @Transactional
     public Merchant getById(UUID id) {
         return entityManager.find(Merchant.class, id);
+    }
+
+    @Transactional
+    public Merchant getByEmail(String email) throws MerchantNotFoundException {
+        TypedQuery<Merchant> query = entityManager.createQuery(
+                "SELECT e FROM Merchant e WHERE e.email = :email", Merchant.class
+        );
+        query.setParameter("email", email);
+
+        try {
+            return query.getSingleResult();
+        } catch (NoResultException e) {
+            throw new MerchantNotFoundException(e);
+        }
     }
 
     @Transactional

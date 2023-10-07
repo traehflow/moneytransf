@@ -15,7 +15,8 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @Entity
-@Table(name = "merchant")
+@Table(name = "merchant",
+        indexes = {@Index(name = "idx_email", columnList = "email")})
 public class Merchant {
 
     @Id
@@ -25,7 +26,7 @@ public class Merchant {
     private String name;
     @Column(name="description")
     private String description;
-    @Column(name="email")
+    @Column(name="email", unique = true)
     private String email;
     @Column(name = "status")
     private MerchantStatus status;

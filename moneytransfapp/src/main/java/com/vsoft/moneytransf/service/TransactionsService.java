@@ -1,5 +1,6 @@
 package com.vsoft.moneytransf.service;
 
+import com.vsoft.moneytransf.MerchantNotFoundException;
 import com.vsoft.moneytransf.TransactionStatus;
 import com.vsoft.moneytransf.dto.PaymentDto;
 import com.vsoft.moneytransf.dto.PaymentResultDTO;
@@ -22,7 +23,7 @@ public class TransactionsService {
     }
 
     public PaymentResultDTO executePayment(PaymentDto paymentDto) {
-        Merchant merchant =  merchantRepository.getById(paymentDto.getCustomerId());
+        Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmali());
         System.out.println(merchant.getName());
         AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
         authorizeTransaction.setMerchant(merchant);
@@ -48,7 +49,7 @@ public class TransactionsService {
     }
 
     public PaymentResultDTO hold(PaymentDto paymentDto) {
-        Merchant merchant =  merchantRepository.getById(paymentDto.getCustomerId());
+        Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmali());
         System.out.println(merchant.getName());
         AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
         authorizeTransaction.setMerchant(merchant);
