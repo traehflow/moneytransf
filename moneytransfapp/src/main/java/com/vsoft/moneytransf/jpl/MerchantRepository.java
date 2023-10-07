@@ -1,6 +1,6 @@
 package com.vsoft.moneytransf.jpl;
 
-import com.vsoft.moneytransf.MerchantNotFoundException;
+import com.vsoft.moneytransf.exception.MerchantNotFoundException;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;

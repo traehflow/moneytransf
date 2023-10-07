@@ -1,6 +1,5 @@
 package com.vsoft.moneytransf.service;
 
-import com.vsoft.moneytransf.MerchantNotFoundException;
 import com.vsoft.moneytransf.TransactionStatus;
 import com.vsoft.moneytransf.dto.PaymentDto;
 import com.vsoft.moneytransf.dto.PaymentResultDTO;

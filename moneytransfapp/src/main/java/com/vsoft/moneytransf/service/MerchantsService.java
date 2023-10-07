@@ -4,9 +4,12 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vsoft.moneytransf.MerchantStatus;
+import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.entity.MerchRepostitory;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
+import org.postgresql.util.PSQLException;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -40,7 +43,12 @@ public class MerchantsService {
                     throw new CsvValidationException("Invalid Merchant Status");
                 }
 
-                merchantRepository.save(merchant);
+                try {
+                    merchantRepository.save(merchant);
+                } catch (DataIntegrityViolationException ex) {
+                    throw new InvalidInputDataException(ex);
+                }
+
             }
         }
     }
