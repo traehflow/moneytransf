@@ -1,21 +1,19 @@
 package com.vsoft.moneytransf.controller;
 
-import com.opencsv.CSVReader;
-import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
-import com.vsoft.moneytransf.MerchantStatus;
-import com.vsoft.moneytransf.dto.MerchantDTO;
+import com.vsoft.moneytransf.Roles;
 import com.vsoft.moneytransf.service.MerchantsService;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.io.StringReader;
 
 @RestController
 @RequestMapping("/import")
@@ -28,8 +26,8 @@ public class CSVImportController {
     }
 
     @Operation(summary = "Import data from csv input", description = "Here's how input line is looking like: \n name,description,email,ENABLED/DISABLED")
-
     @PostMapping("/merchants")
+    @Secured("ROLE_ADMIN")
     public ResponseEntity<String> importMerchants(@RequestBody String csvData) {
         try {
                 merchantsService.importMerchant(csvData);

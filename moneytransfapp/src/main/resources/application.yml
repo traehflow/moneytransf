@@ -23,3 +23,10 @@ javax:
       username: postgres
       password: 123
       driverClassName: org.postgresql.Driver
+logging:
+  level:
+    root: ERROR
+    org.springframework.web: DEBUG
+    com.howtodoinjava: DEBUG
+    org.hibernate: DEBUG
+    org.springframework.security: DEBUG
