@@ -1,16 +1,19 @@
 package com.vsoft.moneytransf.service;
 
+import com.vsoft.moneytransf.MerchantStatus;
 import com.vsoft.moneytransf.TransactionStatus;
 import com.vsoft.moneytransf.dto.PaymentDto;
 import com.vsoft.moneytransf.dto.PaymentResultDTO;
 import com.vsoft.moneytransf.dto.ReversePaymentDTO;
 import com.vsoft.moneytransf.dto.TransactionDTO;
+import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.AuthorizeTransaction;
 import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.Transaction;
+import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
@@ -26,8 +29,12 @@ public class TransactionsService {
         this.merchantRepository = merchantRepository;
     }
 
+    @Transactional
     public PaymentResultDTO executePayment(PaymentDto paymentDto) {
         Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmali());
+        if(merchant.getStatus() == MerchantStatus.DISABLED) {
+            throw new InvalidInputDataException("Only enabled merchants can do that transaction.");
+        }
         System.out.println(merchant.getName());
         AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
         authorizeTransaction.setMerchant(merchant);
@@ -52,8 +59,12 @@ public class TransactionsService {
         return paymentResultDTO;
     }
 
+    @Transactional
     public PaymentResultDTO hold(PaymentDto paymentDto) {
         Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmali());
+        if(merchant.getStatus() == MerchantStatus.DISABLED) {
+            throw new InvalidInputDataException("Only enabled merchants can do that transaction.");
+        }
         System.out.println(merchant.getName());
         AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
         authorizeTransaction.setMerchant(merchant);
@@ -68,11 +79,19 @@ public class TransactionsService {
         return paymentResultDTO;
     }
 
+    @Transactional
     public TransactionDTO reversePayment(ReversePaymentDTO reversePaymentDTO) {
         Transaction transaction = transactionRepository.fetch(reversePaymentDTO.getTransactionId());
         if (transaction.getStatus() == TransactionStatus.APPROVED) {
             transaction.setStatus(TransactionStatus.REVERSED);
             transactionRepository.save(transaction);
+        } else {
+            throw new InvalidInputDataException("Only transactions in APPROVED stay can be reversed");
+        }
+
+        Merchant merchant = transaction.getMerchant();
+        if(merchant.getStatus() == MerchantStatus.DISABLED) {
+            throw new InvalidInputDataException("Only enabled merchants can do that transaction.");
         }
         Transaction reverseTransaction = new Transaction();
         reverseTransaction.setCustomerEmail(transaction.getCustomerEmail());
