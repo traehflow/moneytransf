@@ -42,11 +42,19 @@ public class SecurityConfig {
                 .password("password")
                 .roles(Roles.USER)
                 .build();
+
         UserDetails admin = User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("password")
-                .roles(Roles.ADMIN, Roles.ADMIN)
+                .roles(Roles.ADMIN, Roles.USER)
                 .build();
+
+        UserDetails merchant = User.withDefaultPasswordEncoder()
+                .username("merchant")
+                .password("password")
+                .roles(Roles.USER, Roles.MERCHANT)
+                .build();
+
         return new InMemoryUserDetailsManager(user, admin);
     }
 }

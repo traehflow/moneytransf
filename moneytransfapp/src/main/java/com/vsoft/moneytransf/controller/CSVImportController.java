@@ -7,7 +7,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,7 +26,7 @@ public class CSVImportController {
 
     @Operation(summary = "Import data from csv input", description = "Here's how input line is looking like: \n name,description,email,ENABLED/DISABLED")
     @PostMapping("/merchants")
-    @Secured("ROLE_ADMIN")
+    @Secured(Roles.ROLE_PREFIX + "ADMIN")
     public ResponseEntity<String> importMerchants(@RequestBody String csvData) {
         try {
                 merchantsService.importMerchant(csvData);

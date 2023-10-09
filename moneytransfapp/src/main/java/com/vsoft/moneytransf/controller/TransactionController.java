@@ -1,8 +1,10 @@
 package com.vsoft.moneytransf.controller;
 
+import com.vsoft.moneytransf.Roles;
 import com.vsoft.moneytransf.dto.PaymentDto;
 import com.vsoft.moneytransf.dto.PaymentResultDTO;
 import com.vsoft.moneytransf.service.TransactionsService;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -15,6 +17,7 @@ public class TransactionController {
         this.transactionsService = transactionsService;
     }
 
+    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     @PostMapping("/pay")
     public PaymentResultDTO pay(PaymentDto paymentDto) {
         return transactionsService.executePayment(paymentDto);
