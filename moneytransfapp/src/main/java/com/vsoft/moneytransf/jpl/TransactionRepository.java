@@ -7,6 +7,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.UUID;
 
 @Repository
 public class TransactionRepository {
@@ -31,5 +32,10 @@ public class TransactionRepository {
         entityManager.createQuery("DELETE FROM Transaction t WHERE t.timestamp < :timestamp")
                 .setParameter("timestamp", timestamp)
                 .executeUpdate();
+    }
+
+    @Transactional
+    public Transaction fetch(UUID transactionId) {
+        return entityManager.find(Transaction.class, transactionId);
     }
 }

@@ -3,6 +3,8 @@ package com.vsoft.moneytransf.controller;
 import com.vsoft.moneytransf.Roles;
 import com.vsoft.moneytransf.dto.PaymentDto;
 import com.vsoft.moneytransf.dto.PaymentResultDTO;
+import com.vsoft.moneytransf.dto.ReversePaymentDTO;
+import com.vsoft.moneytransf.dto.TransactionDTO;
 import com.vsoft.moneytransf.service.TransactionsService;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,9 +25,15 @@ public class TransactionController {
         return transactionsService.executePayment(paymentDto);
     }
 
+    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     @PostMapping("/hold")
     public PaymentResultDTO hold(PaymentDto paymentDto) {
         return transactionsService.hold(paymentDto);
     }
 
+    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
+    @PostMapping("/reverse")
+    public TransactionDTO reverse(ReversePaymentDTO reversePaymentDTO) {
+        return transactionsService.reversePayment(reversePaymentDTO);
+    }
 }
