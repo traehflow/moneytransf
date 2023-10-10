@@ -50,7 +50,12 @@ dependencies {
 	implementation(group: 'io.springfox', name: 'springfox-swagger2', version: swaggerVersion)
 	implementation(group: 'io.springfox', name: 'springfox-swagger-ui', version: swaggerVersion)
 	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'javax.validation:validation-api:2.0.0.Final'
 	implementation 'com.opencsv:opencsv:5.7.1'
+	implementation 'commons-validator:commons-validator:1.7'
+	implementation 'org.springframework:spring-context-support'
+
+
 
 
 

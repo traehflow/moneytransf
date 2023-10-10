@@ -6,8 +6,10 @@ import com.vsoft.moneytransf.dto.PaymentResultDTO;
 import com.vsoft.moneytransf.dto.ReversePaymentDTO;
 import com.vsoft.moneytransf.dto.TransactionDTO;
 import com.vsoft.moneytransf.service.TransactionsService;
+import jakarta.validation.Valid;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController("transactions")
@@ -21,19 +23,19 @@ public class TransactionController {
 
     @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     @PostMapping("/pay")
-    public PaymentResultDTO pay(PaymentDto paymentDto) {
+    public PaymentResultDTO pay(@Valid @RequestBody PaymentDto paymentDto) {
         return transactionsService.executePayment(paymentDto);
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     @PostMapping("/hold")
-    public PaymentResultDTO hold(PaymentDto paymentDto) {
+    public PaymentResultDTO hold(@Valid PaymentDto paymentDto) {
         return transactionsService.hold(paymentDto);
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     @PostMapping("/reverse")
-    public TransactionDTO reverse(ReversePaymentDTO reversePaymentDTO) {
+    public TransactionDTO reverse(@Valid ReversePaymentDTO reversePaymentDTO) {
         return transactionsService.reversePayment(reversePaymentDTO);
     }
 }

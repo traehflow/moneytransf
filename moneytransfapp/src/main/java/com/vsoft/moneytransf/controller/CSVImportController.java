@@ -26,7 +26,7 @@ public class CSVImportController {
 
     @Operation(summary = "Import data from csv input", description = "Here's how input line is looking like: \n name,description,email,ENABLED/DISABLED")
     @PostMapping("/merchants")
-    @Secured(Roles.ROLE_PREFIX + "ADMIN")
+    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     public ResponseEntity<String> importMerchants(@RequestBody String csvData) {
         try {
                 merchantsService.importMerchant(csvData);

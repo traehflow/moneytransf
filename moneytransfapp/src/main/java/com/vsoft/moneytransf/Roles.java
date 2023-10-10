@@ -7,5 +7,5 @@ public final class Roles {
 
     public static final String MERCHANT = "MERCHANT";
 
-    public static final String ROLE_PREFIX = "_ROLE";
+    public static final String ROLE_PREFIX = "ROLE_";
 }
