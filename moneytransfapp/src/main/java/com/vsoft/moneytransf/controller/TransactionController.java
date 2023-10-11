@@ -11,14 +11,26 @@ import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import com.vsoft.moneytransf.jpl.TransactionRepository;
+import com.vsoft.moneytransf.CleanupTasks;
+
 
 @RestController("transactions")
 public class TransactionController {
 
     private final TransactionsService transactionsService;
 
-    public TransactionController(TransactionsService transactionsService) {
+    private final TransactionRepository transactionRepository;
+
+    private final CleanupTasks cleanupTasks;
+
+    public TransactionController(TransactionsService transactionsService, TransactionRepository transactionRepository,
+                                 CleanupTasks cleanupTasks) {
         this.transactionsService = transactionsService;
+
+        //I will remove it from here
+        this.transactionRepository = transactionRepository;
+        this.cleanupTasks = cleanupTasks;
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
@@ -37,5 +49,16 @@ public class TransactionController {
     @PostMapping("/reverse")
     public TransactionDTO reverse(@Valid ReversePaymentDTO reversePaymentDTO) {
         return transactionsService.reversePayment(reversePaymentDTO);
+    }
+
+    @Secured(Roles.ROLE_PREFIX + Roles.ADMIN)
+    @PostMapping("/forceCleanup")
+    public void forceCleanup() {
+        cleanupTasks.cleanupTransactions();
+    }
+
+    @PostMapping("/forceClean")
+    public void forceClean(long millisAgo) {
+        transactionRepository.deleteByTimestampBefore(System.currentTimeMillis() - millisAgo);
     }
 }
