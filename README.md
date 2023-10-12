@@ -14,3 +14,12 @@ Postgresql database is used.
 A scheduled task in (CleanupTasks.java) is running on every 5 minutes that clears all transactions that are older than 1 hour
 
 Endpoints are accessible from the swagger interface which can be accessed by http://localhost:8080/swagger-ui.html
+
+#Using Docker Compose
+ 1. Run ./gradlew build on the moneystransfapp
+
+ 2. Execute the following commands:
+  - docker compose build
+  - docker compose up
+
+ 3. Access application on http://localhost:8080/swagger-ui.html

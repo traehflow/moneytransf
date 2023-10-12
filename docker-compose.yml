@@ -4,13 +4,14 @@ services:
   db:
     image: "postgres:14.1-alpine"
     container_name: postgres14
+    user: postgres
+    hostname: postreserv
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready", "-d", "moneytransf" ]
+      test: [ "CMD-SHELL", "pg_isready", "-d", "db_prod"  ]
       interval: 30s
       timeout: 60s
       retries: 5
     environment:
-      - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=123
       - POSTGRES_DB=moneytransf
     ports:
@@ -19,6 +20,8 @@ services:
   moneytransferapp:
     container_name: moneytransferapp
     build: ./moneytransfapp
+    environment:
+      - DB_SERV=postreserv
     depends_on:
       db:
         condition: service_healthy
