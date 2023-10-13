@@ -9,10 +9,11 @@ import java.math.BigDecimal;
 
 @Data
 public class PaymentDto {
-    @NotBlank(message = "email message required.")
+    @NotBlank(message = "email required.")
     @Email
-    String merchantEmali;
+    String merchantEmail;
     BigDecimal amount;
+    @NotBlank(message = "email required.")
     @Email
     String customerEmail;
     String customerPhone;

@@ -2,10 +2,12 @@ package com.vsoft.moneytransf.dto;
 
 import com.vsoft.moneytransf.MerchantStatus;
 import com.vsoft.moneytransf.validation.Email;
+import jakarta.persistence.Column;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import org.hibernate.annotations.ColumnDefault;
 
-import java.util.Currency;
+import java.math.BigDecimal;
 
 @Data
 public class MerchantDTO {
@@ -15,5 +17,6 @@ public class MerchantDTO {
     @Email
     private String email;
     private MerchantStatus status;
-    private Currency totalTransactionSum;
+
+    private BigDecimal totalTransactionSum;
 }

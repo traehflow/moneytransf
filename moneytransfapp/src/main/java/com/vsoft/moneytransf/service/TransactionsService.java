@@ -2,20 +2,15 @@ package com.vsoft.moneytransf.service;
 
 import com.vsoft.moneytransf.MerchantStatus;
 import com.vsoft.moneytransf.TransactionStatus;
-import com.vsoft.moneytransf.dto.PaymentDto;
-import com.vsoft.moneytransf.dto.PaymentResultDTO;
-import com.vsoft.moneytransf.dto.ReversePaymentDTO;
-import com.vsoft.moneytransf.dto.TransactionDTO;
+import com.vsoft.moneytransf.dto.*;
 import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
-import com.vsoft.moneytransf.jpl.entity.AuthorizeTransaction;
-import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
-import com.vsoft.moneytransf.jpl.entity.Merchant;
-import com.vsoft.moneytransf.jpl.entity.Transaction;
+import com.vsoft.moneytransf.jpl.entity.*;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -31,7 +26,7 @@ public class TransactionsService {
 
     @Transactional
     public PaymentResultDTO executePayment(PaymentDto paymentDto) {
-        Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmali());
+        Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmail());
         if(merchant.getStatus() == MerchantStatus.DISABLED) {
             throw new InvalidInputDataException("Only enabled merchants can do that transaction.");
         }
@@ -51,6 +46,9 @@ public class TransactionsService {
         chargeTransaction.setReferencedTransaction(authorizeTransaction);
         transactionRepository.save(chargeTransaction);
 
+        merchantRepository.updateMerchantTupdateMerchantTotalSumByotalSumBy(merchant, paymentDto.getAmount());
+
+
         PaymentResultDTO paymentResultDTO = new PaymentResultDTO();
         paymentResultDTO.setAuthorizeTransactionId(authorizeTransaction.getId());
         paymentResultDTO.setChargeTransactionId(chargeTransaction.getId());
@@ -61,7 +59,7 @@ public class TransactionsService {
 
     @Transactional
     public PaymentResultDTO hold(PaymentDto paymentDto) {
-        Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmali());
+        Merchant merchant =  merchantRepository.getByEmail(paymentDto.getMerchantEmail());
         if(merchant.getStatus() == MerchantStatus.DISABLED) {
             throw new InvalidInputDataException("Only enabled merchants can do that transaction.");
         }
@@ -108,4 +106,35 @@ public class TransactionsService {
         return transactionDTO;
     }
 
+    @Transactional
+    public TransactionDTO refundPayment(RefundPaymentDTO refundPaymentDTO) {
+        Transaction transaction = transactionRepository.fetch(refundPaymentDTO.getTransactionId());
+        if (transaction.getStatus() != TransactionStatus.REVERSED) {
+            transaction.setStatus(TransactionStatus.REFUNDED);
+            transactionRepository.save(transaction);
+        } else {
+            throw new InvalidInputDataException("REVERSED transactions cannot be REFUNDED.");
+        }
+
+        Merchant merchant = transaction.getMerchant();
+        if(merchant.getStatus() == MerchantStatus.DISABLED) {
+            throw new InvalidInputDataException("Only enabled merchants can do that transaction.");
+        }
+        RefundTransaction refundTransaction = new RefundTransaction();
+        refundTransaction.setCustomerEmail(transaction.getCustomerEmail());
+        refundTransaction.setCustomerPhone(transaction.getCustomerPhone());
+        refundTransaction.setAmount(refundPaymentDTO.getAmount());
+        refundTransaction.setReferencedTransaction(transaction);
+        refundTransaction.setStatus(TransactionStatus.REFUNDED);
+        transactionRepository.save(refundTransaction);
+
+        merchantRepository.updateMerchantTupdateMerchantTotalSumByotalSumBy(merchant, refundPaymentDTO.getAmount().multiply(new BigDecimal(-1)));
+
+        TransactionDTO transactionDTO = new TransactionDTO();
+        transactionDTO.setAmount(transaction.getAmount());
+        transactionDTO.setTransactionId(refundTransaction.getId());
+        transactionDTO.setCustomerEmail(transaction.getCustomerEmail());
+        transactionDTO.setCustomerPhone(transaction.getCustomerPhone());
+        return transactionDTO;
+    }
 }

@@ -8,7 +8,7 @@ public class EmailValidatorConstraint implements
         ConstraintValidator<Email, String> {
 
     @Override
-    public void initialize(Email contactNumber) {
+    public void initialize(Email email) {
     }
 
     @Override

@@ -6,8 +6,9 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
-import java.util.Currency;
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -30,7 +31,8 @@ public class Merchant {
     private String email;
     @Column(name = "status")
     private MerchantStatus status;
-    @Column(name = "total_transaction_sum")
-    private Currency totalTransactionSum;
+    @Column(name = "total_transaction_sum", updatable = false)
+    @ColumnDefault("0")
+    private BigDecimal totalTransactionSum;
 
 }
