@@ -4,6 +4,7 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvValidationException;
 import com.vsoft.moneytransf.MerchantStatus;
+import com.vsoft.moneytransf.dto.MerchantDTO;
 import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.entity.MerchRepostitory;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 public class MerchantsService {
@@ -55,5 +57,23 @@ public class MerchantsService {
 
     public List<Merchant> listAll(){
         return merchRepostitory.findAll();
+    }
+
+    public Merchant update(UUID merchantId, MerchantDTO merchantDTO) {
+        Merchant merchant = merchantRepository.getById(merchantId);
+        if(merchantDTO.getDescription() != null) {
+            merchant.setDescription(merchantDTO.getDescription());
+        }
+        if(merchantDTO.getEmail() != null) {
+            merchant.setEmail(merchantDTO.getEmail());
+        }
+        if(merchantDTO.getName() != null) {
+            merchant.setName(merchantDTO.getName());
+        }
+        if(merchantDTO.getStatus() != null) {
+            merchant.setStatus(merchantDTO.getStatus());
+        }
+        return merchRepostitory.save(merchant);
+
     }
 }

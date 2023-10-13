@@ -8,15 +8,13 @@ import lombok.Data;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
+import java.util.UUID;
 
 @Data
 public class MerchantDTO {
-    private Long id;
     private String name;
     private String description;
     @Email
     private String email;
     private MerchantStatus status;
-
-    private BigDecimal totalTransactionSum;
 }

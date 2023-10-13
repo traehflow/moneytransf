@@ -4,6 +4,7 @@ import com.vsoft.moneytransf.exception.MerchantNotFoundException;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
+import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -66,6 +67,11 @@ public class MerchantRepository {
         var result = entityManager.createQuery("SELECT name from Merchant");
         return result.getResultList();
     }
+
+/*    @Transactional
+    public Merchant update(Merchant merchant) {
+        return sessionFactory.openSession().merge(merchant);
+    }*/
 }
 
 

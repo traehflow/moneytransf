@@ -5,6 +5,7 @@ Postgresql database is used.
 
  - /import/merchants - Import merchants from csv file
  - /merchants/list - list all merchants
+ - /merchants/update/{merchantId} - update merchant. All fields can be updated except totalTransactionSum. The format is as follows: merchant,merchant@mail.com,merchant@mail.com,ENABLED
  - /transactions/forceClean?millisAgo=number - cleans all transactions except those before millisAgo milliseconds.
  - /transactions/cleanup - clean all transactions except those in the last hour
  - /transactions/pay - Execute payment task

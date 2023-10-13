@@ -2,6 +2,7 @@ package com.vsoft.moneytransf.validation;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.validator.EmailValidator;
 
 public class EmailValidatorConstraint implements
@@ -14,7 +15,7 @@ public class EmailValidatorConstraint implements
     @Override
     public boolean isValid(String email,
                            ConstraintValidatorContext cxt) {
-        return EmailValidator.getInstance().isValid(email);
+        return StringUtils.isEmpty(email) || EmailValidator.getInstance().isValid(email);
     }
 
 }
