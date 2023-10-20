@@ -59,8 +59,23 @@ public class MerchantsServiceImpl implements MerchantsService {
         return merchRepostitory.findAll();
     }
 
+    public Merchant getByEmail(String email) {
+        return merchantRepository.getByEmail(email);
+    }
+
     public Merchant update(UUID merchantId, MerchantDTO merchantDTO) {
         Merchant merchant = merchantRepository.getById(merchantId);
+        return updateMerchant(merchantDTO, merchant);
+
+    }
+
+    public Merchant updateByEmail(String email, MerchantDTO merchantDTO) {
+        Merchant merchant = merchantRepository.getByEmail(email);
+        return updateMerchant(merchantDTO, merchant);
+
+    }
+
+    private Merchant updateMerchant(MerchantDTO merchantDTO, Merchant merchant) {
         if(merchantDTO.getDescription() != null) {
             merchant.setDescription(merchantDTO.getDescription());
         }
@@ -74,6 +89,5 @@ public class MerchantsServiceImpl implements MerchantsService {
             merchant.setStatus(merchantDTO.getStatus());
         }
         return merchRepostitory.save(merchant);
-
     }
 }

@@ -12,4 +12,8 @@ public interface MerchantsService {
     void importMerchant(String csvData) throws CsvValidationException, IOException;
     List<Merchant> listAll();
     Merchant update(UUID merchantId, MerchantDTO merchantDTO);
+
+    Merchant getByEmail(String email);
+
+    Merchant updateByEmail(String email, MerchantDTO merchantDTO);
 }

@@ -13,9 +13,7 @@ import java.util.UUID;
 
 @Data
 public class MerchantDTO {
-    @NotBlank
     private String name;
-    @NotBlank
     private String description;
     @Email
     private String email;
