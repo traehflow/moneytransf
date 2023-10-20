@@ -2,11 +2,13 @@ package com.vsoft.moneytransf.controller;
 
 import com.opencsv.exceptions.CsvValidationException;
 import com.vsoft.moneytransf.Roles;
-import com.vsoft.moneytransf.service.MerchantsService;
+import com.vsoft.moneytransf.service.impl.MerchantsServiceImpl;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,9 +20,9 @@ import java.io.IOException;
 @RequestMapping("/import")
 public class CSVImportController {
 
-    final MerchantsService merchantsService;
+    final MerchantsServiceImpl merchantsService;
 
-    CSVImportController(MerchantsService merchantsService) {
+    CSVImportController(MerchantsServiceImpl merchantsService) {
         this.merchantsService = merchantsService;
     }
 
@@ -29,6 +31,8 @@ public class CSVImportController {
     @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
     public ResponseEntity<String> importMerchants(@RequestBody String csvData) {
         try {
+            Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+            System.out.println(auth);
                 merchantsService.importMerchant(csvData);
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)

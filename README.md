@@ -16,7 +16,7 @@ A scheduled task in (CleanupTasks.java) is running on every 5 minutes that clear
 
 Endpoints are accessible from the swagger interface which can be accessed by http://localhost:8080/swagger-ui.html
 
-#Using Docker Compose
+# Using Docker Compose
  1. Run ./gradlew build on the moneystransfapp
 
  2. Execute the following commands:
@@ -27,3 +27,11 @@ Endpoints are accessible from the swagger interface which can be accessed by htt
 
 Used Docker Compose version v2.17.3
 
+# Running the application
+
+Current application has one hardcoded admin and two hardcoded merchants
+ - admin:password
+ - johnwill@merchant.com
+ - petersecada@merchant.com
+
+For this implementation, merchant's username is his mail and is used to register into the merchants table.

@@ -1,10 +1,12 @@
 package com.vsoft.moneytransf.controller;
 
 import com.vsoft.moneytransf.Roles;
+import com.vsoft.moneytransf.UserProfile;
 import com.vsoft.moneytransf.dto.*;
 import com.vsoft.moneytransf.service.TransactionsService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -21,41 +23,26 @@ public class TransactionController {
 
     private final CleanupTasks cleanupTasks;
 
+    private final UserProfile userProfile;
+
     public TransactionController(TransactionsService transactionsService, TransactionRepository transactionRepository,
-                                 CleanupTasks cleanupTasks) {
+                                 CleanupTasks cleanupTasks, UserProfile userProfile) {
         this.transactionsService = transactionsService;
 
         //I will remove it from here
         this.transactionRepository = transactionRepository;
         this.cleanupTasks = cleanupTasks;
+        this.userProfile = userProfile;
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
-    @PostMapping("/pay")
-    public PaymentResultDTO pay(@Valid @RequestBody PaymentDto paymentDto) {
-        return transactionsService.executePayment(paymentDto);
-    }
-
-    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
-    @PostMapping("/hold")
-    public PaymentResultDTO hold(@Valid @RequestBody PaymentDto paymentDto) {
-        return transactionsService.hold(paymentDto);
-    }
-
-    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
-    @PostMapping("/reverse")
-    public TransactionDTO reverse(@Valid @RequestBody ReversePaymentDTO reversePaymentDTO) {
-        return transactionsService.reversePayment(reversePaymentDTO);
-    }
-
-    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
-    @PostMapping("/refund")
-    public TransactionDTO refund(@Valid @RequestBody RefundPaymentDTO refundPaymentDTO) {
-        return transactionsService.refundPayment(refundPaymentDTO);
+    @PostMapping()
+    public OutputTransactionDTO input(@Valid @RequestBody InputTransactionDTO inputTransactionDTO) {
+        return transactionsService.executeTransaction(inputTransactionDTO, userProfile.getUserName());
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.ADMIN)
-    @PostMapping("/forceCleanup")
+    @DeleteMapping()
     public void forceCleanup() {
         cleanupTasks.cleanupTransactions();
     }

@@ -4,7 +4,6 @@ import com.vsoft.moneytransf.exception.MerchantNotFoundException;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
-import org.hibernate.SessionFactory;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
@@ -43,15 +42,16 @@ public class MerchantRepository {
         );
         query.setParameter("email", email);
 
-        try {
-            return query.getSingleResult();
-        } catch (NoResultException e) {
-            throw new MerchantNotFoundException(e);
+        var result = query.getResultList();
+        if(result.isEmpty()) {
+            return null;
+        } else {
+            return query.getResultList().get(0);
         }
     }
 
     @Transactional
-    public void updateMerchantTupdateMerchantTotalSumByotalSumBy(Merchant merchant, BigDecimal value) {
+    public void updateMerchantTotalSumBy(Merchant merchant, BigDecimal value) {
         Query query = entityManager.createQuery(
                 "UPDATE Merchant " +
                         "SET totalTransactionSum = totalTransactionSum + :incrementValue " +

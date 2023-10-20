@@ -1,29 +1,28 @@
 package com.vsoft.moneytransf;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springframework.context.annotation.*;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
-import org.springframework.security.config.annotation.web.configurers.CsrfConfigurer;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-
-import static org.springframework.security.config.Customizer.withDefaults;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.web.context.WebApplicationContext;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity(securedEnabled = true)
 public class SecurityConfig {
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, AuthenticationSuccessHandler customLoginSuccessHandler) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
@@ -32,17 +31,17 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/import/merchants").hasAnyRole(new String[]{Roles.ADMIN, Roles.MERCHANT})
 
                 )
-                .formLogin(withDefaults())
+                //.formLogin(Customizer.withDefaults())
+                .formLogin( x -> {
+                x.successHandler(customLoginSuccessHandler);
+
+                })
+                //.successHandler(customLoginSuccessHandler)
                 .build();
     }
 
     @Bean
     public UserDetailsService userDetailsService() {
-        UserDetails user = User.withDefaultPasswordEncoder()
-                .username("user")
-                .password("password")
-                .roles(Roles.USER)
-                .build();
 
         UserDetails admin = User.withDefaultPasswordEncoder()
                 .username("admin")
@@ -50,12 +49,35 @@ public class SecurityConfig {
                 .roles(Roles.ADMIN, Roles.USER)
                 .build();
 
-        UserDetails merchant = User.withDefaultPasswordEncoder()
-                .username("merchant")
+        UserDetails merchant1 = User.withDefaultPasswordEncoder()
+                .username("johnwill@merchant.com")
                 .password("password")
                 .roles(Roles.USER, Roles.MERCHANT)
                 .build();
 
-        return new InMemoryUserDetailsManager(user, admin, merchant);
+        UserDetails merchant2 = User.withDefaultPasswordEncoder()
+                .username("petersecada@merchant.com")
+                .password("password")
+                .roles(Roles.USER, Roles.MERCHANT)
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, merchant1, merchant2);
+    }
+
+    @Bean
+    @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+    public UserProfile getUser(HttpServletRequest request) {
+        UserProfile userProfile = new UserProfile();
+        System.out.println("User principal: ");
+        System.out.println(request.getUserPrincipal());
+        var principal = request.getUserPrincipal();
+        if (principal instanceof UsernamePasswordAuthenticationToken token) {
+            userProfile.setAdmin(token.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals(Roles.ROLE_PREFIX + Roles.ADMIN)));
+            userProfile.setMerchant(token.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals(Roles.ROLE_PREFIX + Roles.MERCHANT)));
+        }
+
+        userProfile.setUserName(principal.getName());
+        return userProfile;
     }
 }
+

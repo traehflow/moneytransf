@@ -6,8 +6,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
-public class PaymentResultDTO {
-    UUID authorizeTransactionId;
-    UUID chargeTransactionId;
+public class OutputTransactionDTO {
+    UUID transactionId;
+    UUID referencedTransactionId;
     BigDecimal amount;
 }

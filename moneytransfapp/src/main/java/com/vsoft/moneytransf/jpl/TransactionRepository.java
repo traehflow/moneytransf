@@ -16,9 +16,9 @@ public class TransactionRepository {
     private EntityManager entityManager;
 
     @Transactional
-    public Transaction save(Transaction merchant) {
-        entityManager.persist(merchant);
-        return merchant;
+    public Transaction save(Transaction transaction) {
+        entityManager.persist(transaction);
+        return transaction;
     }
 
     @Transactional
