@@ -8,7 +8,9 @@ import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.Transaction;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ChargeTransactionTemplate extends TransactionTemplate {
     public ChargeTransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
         super(transactionRepository, merchantRepository);

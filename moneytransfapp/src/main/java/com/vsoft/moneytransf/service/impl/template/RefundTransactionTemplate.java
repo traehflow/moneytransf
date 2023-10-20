@@ -10,9 +10,11 @@ import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.RefundTransaction;
 import com.vsoft.moneytransf.jpl.entity.Transaction;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
+@Component
 public class RefundTransactionTemplate extends TransactionTemplate{
     public RefundTransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
         super(transactionRepository, merchantRepository);

@@ -7,7 +7,9 @@ import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.*;
+import org.springframework.stereotype.Component;
 
+@Component
 public class ReversalTransactionTemplate extends TransactionTemplate{
 
     public ReversalTransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
