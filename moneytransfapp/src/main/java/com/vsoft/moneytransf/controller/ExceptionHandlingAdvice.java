@@ -28,7 +28,7 @@ public class ExceptionHandlingAdvice {
     @ExceptionHandler(InvalidInputDataException.class)
     public ResponseEntity<ErrorOutput> handleSpecificException(InvalidInputDataException ex) {
         ErrorOutput errorOutput = new ErrorOutput();
-        errorOutput.setErrorMessage("Invalid input ");
+        errorOutput.setErrorMessage("Invalid input: " + ex.getMessage());
         return new ResponseEntity<>(errorOutput, HttpStatus.BAD_REQUEST);
     }
 

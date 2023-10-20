@@ -6,6 +6,7 @@ import com.vsoft.moneytransf.dto.OutputTransactionDTO;
 import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
+import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.RefundTransaction;
 import com.vsoft.moneytransf.jpl.entity.Transaction;
@@ -20,11 +21,14 @@ public class RefundTransactionTemplate extends TransactionTemplate{
     @Override
     protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         Transaction transaction = transactionRepository.fetch(paymentDTO.getReferencedTransactionId());
+        if(!(transaction instanceof ChargeTransaction)) {
+            throw new InvalidInputDataException("Only CHARGE transaction can be REFUNDED.");
+        }
         if (transaction.getStatus() != TransactionStatus.REVERSED) {
             transaction.setStatus(TransactionStatus.REFUNDED);
             transactionRepository.save(transaction);
         } else {
-            throw new InvalidInputDataException("REVERSED transactions cannot be REFUNDED.");
+            throw new InvalidInputDataException("REVERSED state transactions cannot be REFUNDED.");
         }
 
         RefundTransaction refundTransaction = new RefundTransaction();
