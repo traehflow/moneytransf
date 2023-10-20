@@ -12,7 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.UUID;
 
-@RestController("merchants")
+@RestController
+@RequestMapping("/merchants/")
 public class MerchantController {
 
     private final MerchantsService merchantsService;

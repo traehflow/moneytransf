@@ -6,15 +6,13 @@ import com.vsoft.moneytransf.dto.*;
 import com.vsoft.moneytransf.service.TransactionsService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.annotation.Secured;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.CleanupTasks;
 
 
-@RestController("transactions")
+@RestController
+@RequestMapping("/transactions/")
 public class TransactionController {
 
     private final TransactionsService transactionsService;
