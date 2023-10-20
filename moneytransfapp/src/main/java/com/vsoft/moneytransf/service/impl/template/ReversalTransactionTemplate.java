@@ -19,6 +19,9 @@ public class ReversalTransactionTemplate extends TransactionTemplate{
     @Override
     protected ReversalTransaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         Transaction transaction = transactionRepository.fetch(paymentDTO.getReferencedTransactionId());
+        if(transaction == null || transaction.getMerchant().getId() != merchant.getId()) {
+            throw new InvalidInputDataException("Invalid referenced transaction ID.");
+        }
         if(!(transaction instanceof AuthorizeTransaction)) {
             throw new InvalidInputDataException("Only AUTHORIZE transaction can be REVERSED.");
         }

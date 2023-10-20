@@ -23,6 +23,11 @@ public class RefundTransactionTemplate extends TransactionTemplate{
     @Override
     protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         Transaction transaction = transactionRepository.fetch(paymentDTO.getReferencedTransactionId());
+
+        if(transaction == null || transaction.getMerchant().getId() != merchant.getId()) {
+            throw new InvalidInputDataException("Invalid referenced transaction ID.");
+        }
+
         if(!(transaction instanceof ChargeTransaction)) {
             throw new InvalidInputDataException("Only CHARGE transaction can be REFUNDED.");
         }
