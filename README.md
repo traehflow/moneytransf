@@ -3,14 +3,33 @@ Sample application for journalling money transfers
 
 Postgresql database is used.
 
- - /import/merchants - Import merchants from csv file
- - /merchants/list - list all merchants
- - /merchants/update/{merchantId} - update merchant. All fields can be updated except totalTransactionSum. The format is as follows: merchant,merchant@mail.com,merchant@mail.com,ENABLED
- - /transactions/forceClean?millisAgo=number - cleans all transactions except those before millisAgo milliseconds.
- - /transactions/cleanup - clean all transactions except those in the last hour
- - /transactions/pay - Execute payment task
- - /transactions/hold - Execute authorization task (hold an amount)
- - /transactions/reverse - Reverse an authorization task.
+## Implemented endpoints:
+ - POST /import/merchants - Import merchants from csv file. The format of each line is as follows: merchant,merchant@mail.com,merchant@mail.com,ENABLED
+ - GET /merchants/ - list all merchants
+ - UPDATE /merchants/{merchantId} - update merchant. All fields can be updated except totalTransactionSum. 
+ - DELETE /transactions/forceClean?millisAgo=number - cleans all transactions except those before millisAgo milliseconds.
+ - DELETE /transactions/ - Forces transaction deletion task.
+ - POST /transactions/ - Performs a transaction
+
+#### POST transaction body is looking like this:
+```JSON
+{
+"transactionType": "CHARGE",
+"amount": 150,
+"customerEmail": "string@abv.bg",
+"customerPhone": "string@abv.bg",
+"referencedTransactionId": "649a7aaf-e334-4a74-a3cf-73783f1f9e13"
+}
+```
+#### transaction type can be four types: 
+ - AUTHORIZE - Hold customer's amount
+ - CHARGE - Charge amount from customer
+ - REVERSAL - Invalidate AUTHORIZE transaction
+ - REFUND - Reverse specific amount from CHARGE transaction.
+
+amount field is used by AUTHORIZE, CHARGE amd REFUND transactions.
+
+referencedTransactionId field is used by REVERSAL and REFUND transactions.
 
 A scheduled task in (CleanupTasks.java) is running on every 5 minutes that clears all transactions that are older than 1 hour
 
