@@ -1,15 +1,22 @@
 # moneytransf
 Sample application for journalling money transfers
 
-Postgresql database is used.
+Postgresql database is used. I've tested it with version 14.1
+
+## User roles
+There are two user roles for this application:
+ - ADMIN - can import merchants, update arbitrary merchant details, except total transactions sum and force transactions cleaning task.
+ - MERCHANT - can perform a transaction and edit details for him/herself.
+
 
 ## Implemented endpoints:
- - POST /import/merchants - Import merchants from csv file. The format of each line is as follows: merchant,merchant@mail.com,merchant@mail.com,ENABLED
+ - POST /import/merchants - Import merchants from csv file. The format of each line is as follows: merchant,merchant@mail.com,merchant@mail.com,ENABLED. ADMIN role is required for this endpoint.
  - GET /merchants/ - list all merchants
- - UPDATE /merchants/{merchantId} - update merchant. All fields can be updated except totalTransactionSum. 
+ - UPDATE /merchants/{merchantId} - update merchant. All fields can be updated except totalTransactionSum. ADMIN role is required for this endpoint.
+ - UPDATE /merchants/ - Update currently logged merchant. MERCHANT role is required for this endpoint.
  - DELETE /transactions/forceClean?millisAgo=number - cleans all transactions except those before millisAgo milliseconds.
- - DELETE /transactions/ - Forces transaction deletion task.
- - POST /transactions/ - Performs a transaction
+ - DELETE /transactions/ - Forces transaction deletion task. ADMIN role is required
+ - POST /transactions/ - Performs a transaction. MERCHANT role is required.
 
 #### POST transaction body is looking like this:
 ```JSON
@@ -29,11 +36,9 @@ Postgresql database is used.
 
 amount field is used by AUTHORIZE, CHARGE amd REFUND transactions.
 
-referencedTransactionId field is used by REVERSAL and REFUND transactions.
+referencedTransactionId field is used by REVERSAL and REFUND transactions. Only transactions by currently logged customer can be refferenced. 
 
 A scheduled task in (CleanupTasks.java) is running on every 5 minutes that clears all transactions that are older than 1 hour
-
-Endpoints are accessible from the swagger interface which can be accessed by http://localhost:8080/swagger-ui.html
 
 # Using Docker Compose
  1. Run ./gradlew build on the moneystransfapp
@@ -54,3 +59,5 @@ Current application has one hardcoded admin and two hardcoded merchants
  - petersecada@merchant.com
 
 For this implementation, merchant's username is his mail and is used to register into the merchants table.
+Endpoints are accessible from the swagger interface which can be accessed by http://localhost:8080/swagger-ui.html
+Also login UI is provided by swagger. Opening it will ask first for credentials.
