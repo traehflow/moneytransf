@@ -33,17 +33,13 @@ public class Transaction {
     @Temporal(TemporalType.TIMESTAMP)
     long timestamp;
 
-    @DecimalMin(value = "0", inclusive = false, message = "Amount must be greater than 0")
-    BigDecimal amount;
     TransactionStatus status;
     @Column(name = "customer_email")
     String customerEmail;
     @Column(name = "customer_phone")
     String customerPhone;
 
-    @ManyToOne
-    @JoinColumn(name = "reference_id", referencedColumnName = "id")
-    Transaction referencedTransaction;
+
 
     @ManyToOne
     @JoinColumn(name = "merchant_id", referencedColumnName = "id")

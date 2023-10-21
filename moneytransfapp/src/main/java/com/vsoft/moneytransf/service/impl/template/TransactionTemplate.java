@@ -20,7 +20,6 @@ public abstract class TransactionTemplate {
         validateInpiut(inputTransactionDTO);
         Transaction transaction = createTransaction(inputTransactionDTO, merchant);
         transaction.setMerchant(merchantRepository.getById(merchant.getId()));
-        transaction.setAmount(inputTransactionDTO.getAmount());
         transaction.setCustomerPhone(inputTransactionDTO.getCustomerPhone());
         transaction.setCustomerEmail(inputTransactionDTO.getCustomerEmail());
         transactionRepository.save(transaction);
