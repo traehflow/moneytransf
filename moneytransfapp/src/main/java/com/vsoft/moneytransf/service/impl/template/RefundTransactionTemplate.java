@@ -21,6 +21,16 @@ public class RefundTransactionTemplate extends TransactionTemplate{
     }
 
     @Override
+    protected void validateInpiut(InputTransactionDTO inputTransactionDTO) {
+        if(inputTransactionDTO.getReferencedTransactionId() == null) {
+            throw new InvalidInputDataException("Reference ID is required for REFUND transaction.");
+        }
+        if(inputTransactionDTO.getAmount() == null) {
+            throw new InvalidInputDataException("Amount is required for REFUND transaction.");
+        }
+    }
+
+    @Override
     protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         Transaction transaction = transactionRepository.fetch(paymentDTO.getReferencedTransactionId());
 
@@ -28,12 +38,14 @@ public class RefundTransactionTemplate extends TransactionTemplate{
             throw new InvalidInputDataException("Invalid referenced transaction ID.");
         }
 
-        if(!(transaction instanceof ChargeTransaction)) {
+        if(!(transaction instanceof ChargeTransaction chargeTransaction)) {
             throw new InvalidInputDataException("Only CHARGE transaction can be REFUNDED.");
         }
-        if (transaction.getStatus() != TransactionStatus.REVERSED) {
-            transaction.setStatus(TransactionStatus.REFUNDED);
-            transactionRepository.save(transaction);
+        if(chargeTransaction.getAmount().compareTo(paymentDTO.getAmount().add(chargeTransaction.getRefundedAmount())) < 0) {
+            throw new InvalidInputDataException("REFUNDED amount cannot be larger than the amount of the referenced transaction plus refundend amount of previous transactions.");
+        }
+        if (chargeTransaction.getStatus() != TransactionStatus.REVERSED) {
+            transactionRepository.updateRefundedChargeTransaction(chargeTransaction, paymentDTO.getAmount());
         } else {
             throw new InvalidInputDataException("REVERSED state transactions cannot be REFUNDED.");
         }

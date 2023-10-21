@@ -17,6 +17,7 @@ public abstract class TransactionTemplate {
         this.merchantRepository = merchantRepository;
     }
     public OutputTransactionDTO execute(InputTransactionDTO inputTransactionDTO, Merchant merchant) {
+        validateInpiut(inputTransactionDTO);
         Transaction transaction = createTransaction(inputTransactionDTO, merchant);
         transaction.setMerchant(merchantRepository.getById(merchant.getId()));
         transaction.setAmount(inputTransactionDTO.getAmount());
@@ -33,6 +34,8 @@ public abstract class TransactionTemplate {
         return resultDTO;
 
     }
+
+    protected abstract void validateInpiut(InputTransactionDTO inputTransactionDTO);
 
     protected abstract Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant);
 

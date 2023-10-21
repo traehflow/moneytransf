@@ -10,7 +10,13 @@ There are two user roles for this application:
 
 
 ## Implemented endpoints:
- - POST /import/merchants - Import merchants from csv file. The format of each line is as follows: merchant,merchant@mail.com,merchant@mail.com,ENABLED. ADMIN role is required for this endpoint.
+ - POST /import/merchants - Import merchants from csv file. The format of each line is as follows: 
+```
+merchant,merchant description,merchant@mail.com,ENABLED
+```
+ADMIN role is required for this endpoint.
+ENABLED or DISABLED is whether the merchant is enabled or disabled. Disabled merchant cannot perform transactions.
+
  - GET /merchants/ - list all merchants
  - UPDATE /merchants/{merchantId} - update merchant. All fields can be updated except totalTransactionSum. ADMIN role is required for this endpoint.
  - UPDATE /merchants/ - Update currently logged merchant. MERCHANT role is required for this endpoint.

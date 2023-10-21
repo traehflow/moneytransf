@@ -17,6 +17,14 @@ public class ReversalTransactionTemplate extends TransactionTemplate{
     }
 
     @Override
+    protected void validateInpiut(InputTransactionDTO inputTransactionDTO) {
+        if(inputTransactionDTO.getReferencedTransactionId() == null) {
+            throw new InvalidInputDataException("Reference ID is required for REVERSAL transaction.");
+        }
+
+    }
+
+    @Override
     protected ReversalTransaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         Transaction transaction = transactionRepository.fetch(paymentDTO.getReferencedTransactionId());
         if(transaction == null || transaction.getMerchant().getId() != merchant.getId()) {
