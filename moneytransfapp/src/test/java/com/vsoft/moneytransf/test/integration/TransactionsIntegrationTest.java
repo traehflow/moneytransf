@@ -1,4 +1,4 @@
-package com.vsoft.moneytransf.test;
+package com.vsoft.moneytransf.test.integration;
 
 import com.vsoft.moneytransf.MerchantStatus;
 import com.vsoft.moneytransf.dto.InputTransactionDTO;
@@ -28,6 +28,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+
 @ExtendWith(SpringExtension.class)
 @SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 public class TransactionsIntegrationTest {
@@ -35,6 +36,12 @@ public class TransactionsIntegrationTest {
     private TestRestTemplate restTemplate;
 
 
+    /**
+     * 1. Test login and several transactions executions
+     *  Authorize -> Reversal -> Charge -> Refund
+     * 2. Tested cases of invalid inpud
+     * 3. Total transaction sum is checked.
+     */
     @Test
     public void completePathTest() {
         String username = "johnwill@merchant.com";
@@ -56,10 +63,6 @@ public class TransactionsIntegrationTest {
         headers.put("Cookie", List.of( cookies));
 
 
-
-        ResponseEntity<Void> merchantResponse = restTemplate.exchange(
-                "/merchants/", HttpMethod.PUT, new HttpEntity(merchantDTO, headers), Void.class);
-
         ResponseEntity<List<Merchant>> merchantsResponse = restTemplate.exchange(
                 "/merchants/", HttpMethod.GET, new HttpEntity(merchantDTO, headers), new ParameterizedTypeReference<List<Merchant>>() {
                 });
@@ -70,70 +73,49 @@ public class TransactionsIntegrationTest {
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         inputTransactionDTO.setTransactionType(TransactionDescriminator.AUTHORIZE);
         inputTransactionDTO.setAmount(new BigDecimal(100));
-        ResponseEntity<OutputTransactionDTO> outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, outputTransaction.getStatusCode());
+        OutputTransactionDTO outputTransactionDTO;
+        testTransaction(inputTransactionDTO, headers, HttpStatus.BAD_REQUEST);
 
         inputTransactionDTO.setCustomerPhone("880880880");
         inputTransactionDTO.setCustomerEmail("invalidEmail");
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-
-        assertEquals(HttpStatus.BAD_REQUEST, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.BAD_REQUEST);
 
         inputTransactionDTO.setCustomerEmail("validEmail@merchant.com");
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.OK, outputTransaction.getStatusCode());
+        outputTransactionDTO = testTransaction(inputTransactionDTO, headers, HttpStatus.OK);
 
-        UUID transactionId = outputTransaction.getBody().getTransactionId();
+        UUID transactionId = outputTransactionDTO.getTransactionId();
 
         inputTransactionDTO.setTransactionType(TransactionDescriminator.REVERSAL);
         inputTransactionDTO.setReferencedTransactionId(UUID.randomUUID());
 
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.BAD_REQUEST, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.BAD_REQUEST);
 
         inputTransactionDTO.setReferencedTransactionId(transactionId);
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.OK, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.OK);
 
         inputTransactionDTO.setTransactionType(TransactionDescriminator.CHARGE);
         inputTransactionDTO.setAmount(new BigDecimal(3000));
         inputTransactionDTO.setReferencedTransactionId(null);
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.OK, outputTransaction.getStatusCode());
+        outputTransactionDTO = testTransaction(inputTransactionDTO, headers, HttpStatus.OK);
 
-        UUID chargeTransactionId = outputTransaction.getBody().getTransactionId();
+        UUID chargeTransactionId = outputTransactionDTO.getTransactionId();
 
         inputTransactionDTO.setTransactionType(TransactionDescriminator.REFUND);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
         inputTransactionDTO.setReferencedTransactionId(UUID.randomUUID());
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.BAD_REQUEST, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.BAD_REQUEST);
 
         inputTransactionDTO.setReferencedTransactionId(chargeTransactionId);
         inputTransactionDTO.setAmount(new BigDecimal(1500));
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.OK, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.OK);
 
         inputTransactionDTO.setReferencedTransactionId(chargeTransactionId);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.OK, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.OK);
 
         inputTransactionDTO.setReferencedTransactionId(chargeTransactionId);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
-        outputTransaction = restTemplate.exchange(
-                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers),  OutputTransactionDTO.class);
-        assertEquals(HttpStatus.BAD_REQUEST, outputTransaction.getStatusCode());
+        testTransaction(inputTransactionDTO, headers, HttpStatus.BAD_REQUEST);
 
         ResponseEntity<List<Merchant>> merchants  = restTemplate.exchange(
                 "/merchants/", HttpMethod.GET, new HttpEntity(inputTransactionDTO, headers),  new ParameterizedTypeReference<List<Merchant>>() {});
@@ -142,8 +124,12 @@ public class TransactionsIntegrationTest {
         Assertions.assertEquals(merchants.getBody().get(0).getTotalTransactionSum(), new BigDecimal("500.00"));
     }
 
-    @Test
-    public void testLogin2() {
-
+    private OutputTransactionDTO testTransaction(InputTransactionDTO inputTransactionDTO, MultiValueMap<String, String> headers, HttpStatus ok) {
+        ResponseEntity<OutputTransactionDTO> result;
+        result = restTemplate.exchange(
+                "/transactions/", HttpMethod.POST, new HttpEntity(inputTransactionDTO, headers), OutputTransactionDTO.class);
+        assertEquals(ok, result.getStatusCode());
+        return result.getBody();
     }
+
 }
