@@ -38,6 +38,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
 	implementation('org.springframework.boot:spring-boot-starter-actuator')
 	implementation('org.postgresql:postgresql')
+	testImplementation 'junit:junit:4.13.1'
 	compileOnly 'org.projectlombok:lombok'
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -54,14 +55,15 @@ dependencies {
 	implementation 'com.opencsv:opencsv:5.7.1'
 	implementation 'commons-validator:commons-validator:1.7'
 	implementation 'org.springframework:spring-context-support'
-
-
-
-
+	testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter:5.7.0'
+	testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
+	testImplementation 'org.junit.vintage:junit-vintage-engine'
+	testImplementation 'org.hamcrest:hamcrest-core'
 
 
 }
 
-tasks.named('test') {
+test {
 	useJUnitPlatform()
 }
