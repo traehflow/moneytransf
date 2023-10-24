@@ -16,17 +16,15 @@ import java.util.Map;
 
 @Service
 public class TransactionsServiceImpl implements TransactionsService {
-    private final TransactionRepository transactionRepository;
 
     private final MerchantRepository merchantRepository;
 
     private final Map<TransactionDescriminator, TransactionTemplate> templates;
-    public TransactionsServiceImpl(TransactionRepository transactionRepository, MerchantRepository merchantRepository,
+    public TransactionsServiceImpl(MerchantRepository merchantRepository,
                                    ChargeTransactionTemplate chargeTransactionTemplate,
                                    ReversalTransactionTemplate reversalTransactionTemplate,
                                    RefundTransactionTemplate refundTransactionTemplatem,
                                    AuthorizeTransactionTemplate authorizeTransactionTemplate) {
-        this.transactionRepository = transactionRepository;
         this.merchantRepository = merchantRepository;
         templates = Map.of(TransactionDescriminator.CHARGE, chargeTransactionTemplate,
                 TransactionDescriminator.REFUND, refundTransactionTemplatem,

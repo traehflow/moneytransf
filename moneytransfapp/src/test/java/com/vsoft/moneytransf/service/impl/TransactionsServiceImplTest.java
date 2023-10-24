@@ -25,6 +25,8 @@ class TransactionsServiceImplTest {
     public static final String MERCHANT_MAIL = "tester@merchant.com";
     TransactionsServiceImpl tested;
 
+    AutoCloseable openMocks;
+
     @Mock
     TransactionRepository transactionRepository;
     @Mock
@@ -39,16 +41,17 @@ class TransactionsServiceImplTest {
     AuthorizeTransactionTemplate authorizeTransactionTemplate;
     @BeforeEach
     void setUp() {
-        MockitoAnnotations.openMocks(this);
+        openMocks = MockitoAnnotations.openMocks(this);
     }
 
     @AfterEach
-    void tearDown() {
+    void tearDown() throws Exception {
+        openMocks.close();
     }
 
     @Test
     void execute_missingMerchant_Exception() {
-        tested = new TransactionsServiceImpl(transactionRepository, merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         Mockito.when(merchantRepository.getByEmail(MERCHANT_MAIL)).thenReturn(null);
         inputTransactionDTO.setTransactionType(TransactionDescriminator.CHARGE);
@@ -58,7 +61,7 @@ class TransactionsServiceImplTest {
 
     @Test
     void execute_disabledMerchant_Exception() {
-        tested = new TransactionsServiceImpl(transactionRepository, merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         Merchant merchant = new Merchant();
         merchant.setName("merchant");
@@ -72,7 +75,7 @@ class TransactionsServiceImplTest {
 
     @Test
     void execute_charge_executeChargeTransaction() {
-        tested = new TransactionsServiceImpl(transactionRepository, merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         Merchant merchant = new Merchant();
         merchant.setName("merchant");

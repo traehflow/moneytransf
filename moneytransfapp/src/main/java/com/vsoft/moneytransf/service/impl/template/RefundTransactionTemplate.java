@@ -21,17 +21,14 @@ public class RefundTransactionTemplate extends TransactionTemplate{
     }
 
     @Override
-    protected void validateInpiut(InputTransactionDTO inputTransactionDTO) {
-        if(inputTransactionDTO.getReferencedTransactionId() == null) {
+    protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
+        if(paymentDTO.getReferencedTransactionId() == null) {
             throw new InvalidInputDataException("Reference ID is required for REFUND transaction.");
         }
-        if(inputTransactionDTO.getAmount() == null) {
+        if(paymentDTO.getAmount() == null) {
             throw new InvalidInputDataException("Amount is required for REFUND transaction.");
         }
-    }
 
-    @Override
-    protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         Transaction transaction = transactionRepository.fetch(paymentDTO.getReferencedTransactionId());
 
         if(transaction == null || transaction.getMerchant().getId() != merchant.getId()) {

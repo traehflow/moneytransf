@@ -18,14 +18,10 @@ public class AuthorizeTransactionTemplate extends TransactionTemplate {
     }
 
     @Override
-    protected void validateInpiut(InputTransactionDTO inputTransactionDTO) {
-        if(inputTransactionDTO.getAmount() == null) {
+    protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
+        if(paymentDTO.getAmount() == null) {
             throw new InvalidInputDataException("Amount is required for AUTHORIZE transaction.");
         }
-    }
-
-    @Override
-    protected Transaction createTransaction(InputTransactionDTO paymentDTO, Merchant merchant) {
         AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
         authorizeTransaction.setAmount(paymentDTO.getAmount());
         authorizeTransaction.setStatus(TransactionStatus.APPROVED);
