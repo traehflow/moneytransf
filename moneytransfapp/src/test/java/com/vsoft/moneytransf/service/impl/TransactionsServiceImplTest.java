@@ -36,6 +36,7 @@ class TransactionsServiceImplTest {
     RefundTransactionTemplate refundTransactionTemplatem;
     @Mock
     AuthorizeTransactionTemplate authorizeTransactionTemplate;
+
     @BeforeEach
     void setUp() {
         openMocks = MockitoAnnotations.openMocks(this);
@@ -48,7 +49,7 @@ class TransactionsServiceImplTest {
 
     @Test
     void execute_missingMerchant_Exception() {
-        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate, transactionRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         Mockito.when(merchantRepository.getByEmail(MERCHANT_MAIL)).thenReturn(null);
         inputTransactionDTO.setTransactionType(TransactionDescriminator.CHARGE);
@@ -58,7 +59,7 @@ class TransactionsServiceImplTest {
 
     @Test
     void execute_disabledMerchant_Exception() {
-        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate,transactionRepository );
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         Merchant merchant = new Merchant();
         merchant.setName("merchant");
@@ -72,7 +73,7 @@ class TransactionsServiceImplTest {
 
     @Test
     void execute_charge_executeChargeTransaction() {
-        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate);
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate, transactionRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         Merchant merchant = new Merchant();
         merchant.setName("merchant");
@@ -82,5 +83,17 @@ class TransactionsServiceImplTest {
         inputTransactionDTO.setTransactionType(TransactionDescriminator.REFUND);
         tested.executeTransaction(inputTransactionDTO, MERCHANT_MAIL);
         Mockito.verify(refundTransactionTemplatem).execute(inputTransactionDTO, merchant);
+    }
+
+    @Test
+    void list_charge_executeChargeTransaction() {
+        tested = new TransactionsServiceImpl(merchantRepository, chargeTransactionTemplate, reversalTransactionTemplate, refundTransactionTemplatem, authorizeTransactionTemplate, transactionRepository);
+        Merchant merchant = new Merchant();
+        merchant.setName("merchant");
+        merchant.setEmail(MERCHANT_MAIL);
+        merchant.setStatus(MerchantStatus.ENABLED);
+        Mockito.when(merchantRepository.getByEmail(MERCHANT_MAIL)).thenReturn(merchant);
+        tested.list(TransactionDescriminator.CHARGE, MERCHANT_MAIL);
+        Mockito.verify(transactionRepository).list(TransactionDescriminator.CHARGE, merchant);
     }
 }

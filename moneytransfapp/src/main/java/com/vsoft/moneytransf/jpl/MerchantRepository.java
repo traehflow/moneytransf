@@ -68,10 +68,6 @@ public class MerchantRepository {
         return result.getResultList();
     }
 
-/*    @Transactional
-    public Merchant update(Merchant merchant) {
-        return sessionFactory.openSession().merge(merchant);
-    }*/
 }
 
 

@@ -81,6 +81,27 @@ class ReversalTransactionTemplateTest {
         Mockito.when(transactionRepository.fetch(referenceTransactionId)).thenReturn(chargeTransaction);        var exception = Assertions.assertThrows(InvalidInputDataException.class, () -> tested.execute(inputTransactionDTO, merchant));
         Assertions.assertNotNull(exception);
     }
+
+    @Test
+    void execute_referencedTransactionNotInApprovedState_Exception() {
+        tested = new ReversalTransactionTemplate(transactionRepository, merchantRepository);
+        InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
+        inputTransactionDTO.setTransactionType(TransactionDescriminator.REVERSAL);
+        inputTransactionDTO.setAmount(new BigDecimal(1000));
+        UUID referenceTransactionId = UUID.randomUUID();
+        inputTransactionDTO.setReferencedTransactionId(referenceTransactionId);
+        Merchant merchant = new Merchant();
+        merchant.setId(UUID.randomUUID());
+        AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
+        authorizeTransaction.setAmount(new BigDecimal(500));
+        authorizeTransaction.setMerchant(merchant);
+        authorizeTransaction.setId(referenceTransactionId);
+        authorizeTransaction.setStatus(TransactionStatus.REVERSED);
+        Mockito.when(transactionRepository.fetch(referenceTransactionId)).thenReturn(authorizeTransaction);
+
+        var exception = Assertions.assertThrows(InvalidInputDataException.class, () -> tested.execute(inputTransactionDTO, merchant));
+        Assertions.assertNotNull(exception);
+    }
     @Test
     void validate_withAmount_ok() {
         tested = new ReversalTransactionTemplate(transactionRepository, merchantRepository);

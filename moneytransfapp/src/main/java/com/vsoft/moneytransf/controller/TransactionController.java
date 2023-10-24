@@ -3,12 +3,16 @@ package com.vsoft.moneytransf.controller;
 import com.vsoft.moneytransf.Roles;
 import com.vsoft.moneytransf.UserProfile;
 import com.vsoft.moneytransf.dto.*;
+import com.vsoft.moneytransf.jpl.entity.Transaction;
+import com.vsoft.moneytransf.jpl.entity.TransactionDescriminator;
 import com.vsoft.moneytransf.service.TransactionsService;
 import jakarta.validation.Valid;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.CleanupTasks;
+
+import java.util.List;
 
 
 @RestController
@@ -37,6 +41,12 @@ public class TransactionController {
     @PostMapping()
     public OutputTransactionDTO input(@Valid @RequestBody InputTransactionDTO inputTransactionDTO) {
         return transactionsService.executeTransaction(inputTransactionDTO, userProfile.getUserName());
+    }
+
+    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
+    @GetMapping()
+    public List<TransactionDTO> list(@RequestParam(required = false) TransactionDescriminator descriminator) {
+        return transactionsService.list(descriminator, userProfile.getUserName());
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.ADMIN)

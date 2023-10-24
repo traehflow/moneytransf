@@ -33,7 +33,7 @@ public class SecurityConfig {
                 )
                 //.formLogin(Customizer.withDefaults())
                 .formLogin( x -> {
-                x.successHandler(customLoginSuccessHandler);
+                    x.successHandler(customLoginSuccessHandler);
 
                 })
                 //.successHandler(customLoginSuccessHandler)

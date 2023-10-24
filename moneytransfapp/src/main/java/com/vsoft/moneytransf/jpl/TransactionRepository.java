@@ -1,8 +1,10 @@
 package com.vsoft.moneytransf.jpl;
 
+import com.vsoft.moneytransf.dto.TransactionDTO;
 import com.vsoft.moneytransf.jpl.entity.ChargeTransaction;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.Transaction;
+import com.vsoft.moneytransf.jpl.entity.TransactionDescriminator;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;
@@ -26,9 +28,23 @@ public class TransactionRepository {
     }
 
     @Transactional
-    public List<String> list() {
-        var result = entityManager.createQuery("SELECT amount from Transaction");
-        return result.getResultList();
+    public List<TransactionDTO> list(TransactionDescriminator descriminator, Merchant merchant) {
+        Query query;
+        String select;
+        if (descriminator == null) {
+            query = entityManager.createQuery("SELECT t from Transaction t where t.merchant = :merchant");
+            query.setParameter("merchant", merchant);
+        } else {
+            select = "SELECT new com.vsoft.moneytransf.dto.TransactionDTO(t.timestamp, t.id, t.status, " + switch (descriminator) {
+                case AUTHORIZE -> "t.amount) from AuthorizeTransaction t ";
+                case REVERSAL -> "t.referencedTransaction.id) from ReversalTransaction t ";
+                case CHARGE ->  "t.amount) from ChargeTransaction t ";
+                case REFUND -> "t.referencedTransaction.id, t.amount) from RefundTransaction t ";
+            } + " WHERE t.merchant = :merchant";
+            query = entityManager.createQuery(select);
+            query.setParameter("merchant", merchant);
+        }
+        return query.getResultList();
     }
 
     @Transactional
