@@ -6,10 +6,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Generated;
 
 @Entity
 @DiscriminatorValue("REVERSAL")
 @Data
+@Generated
 @EqualsAndHashCode(callSuper = true)
 public class ReversalTransaction extends Transaction{
     @ManyToOne

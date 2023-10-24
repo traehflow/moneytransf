@@ -14,8 +14,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Component
-public class RefundTransactionTemplate extends TransactionTemplate{
+@Component("refundTransactionTemplate")
+public class RefundTransactionTemplate extends TransactionTemplateImpl {
     public RefundTransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
         super(transactionRepository, merchantRepository);
     }

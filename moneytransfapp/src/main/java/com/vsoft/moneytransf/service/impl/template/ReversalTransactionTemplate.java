@@ -9,8 +9,8 @@ import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.*;
 import org.springframework.stereotype.Component;
 
-@Component
-public class ReversalTransactionTemplate extends TransactionTemplate{
+@Component("reversalTransactionTemplate")
+public class ReversalTransactionTemplate extends TransactionTemplateImpl {
 
     public ReversalTransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
         super(transactionRepository, merchantRepository);

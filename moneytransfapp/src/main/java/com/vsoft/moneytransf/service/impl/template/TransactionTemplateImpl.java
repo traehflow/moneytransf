@@ -6,13 +6,14 @@ import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.Transaction;
+import com.vsoft.moneytransf.service.TransactionTemplate;
 
-public abstract class TransactionTemplate {
+public abstract class TransactionTemplateImpl implements TransactionTemplate {
 
     MerchantRepository merchantRepository;
     TransactionRepository transactionRepository;
 
-    public TransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
+    public TransactionTemplateImpl(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
         this.transactionRepository = transactionRepository;
         this.merchantRepository = merchantRepository;
     }

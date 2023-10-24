@@ -7,6 +7,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Generated;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -14,6 +15,7 @@ import java.util.UUID;
 @Entity
 @DiscriminatorValue("REFUND")
 @Data
+@Generated
 @EqualsAndHashCode(callSuper = true)
 public class RefundTransaction extends Transaction {
     @DecimalMin(value = "0", inclusive = false, message = "Amount must be greater than 0")

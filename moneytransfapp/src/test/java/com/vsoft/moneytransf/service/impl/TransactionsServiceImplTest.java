@@ -8,7 +8,6 @@ import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.jpl.entity.TransactionDescriminator;
-import com.vsoft.moneytransf.service.TransactionsService;
 import com.vsoft.moneytransf.service.impl.template.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
@@ -17,8 +16,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class TransactionsServiceImplTest {
 

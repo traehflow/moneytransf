@@ -13,8 +13,8 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 
-@Component
-public class ChargeTransactionTemplate extends TransactionTemplate {
+@Component("chargeTransactionTemplate")
+public class ChargeTransactionTemplate extends TransactionTemplateImpl {
     public ChargeTransactionTemplate(TransactionRepository transactionRepository, MerchantRepository merchantRepository) {
         super(transactionRepository, merchantRepository);
     }

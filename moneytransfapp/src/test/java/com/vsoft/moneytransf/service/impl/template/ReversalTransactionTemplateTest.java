@@ -1,5 +1,6 @@
 package com.vsoft.moneytransf.service.impl.template;
 
+import com.vsoft.moneytransf.TransactionStatus;
 import com.vsoft.moneytransf.dto.InputTransactionDTO;
 import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
@@ -19,9 +20,9 @@ import java.util.UUID;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-class RefundTransactionTemplateTest {
+class ReversalTransactionTemplateTest {
 
-    RefundTransactionTemplate tested;
+    ReversalTransactionTemplate tested;
 
     AutoCloseable openMocks;
 
@@ -42,9 +43,9 @@ class RefundTransactionTemplateTest {
 
     @Test
     void execute_noAmount_Exception() {
-        tested = new RefundTransactionTemplate(transactionRepository, merchantRepository);
+        tested = new ReversalTransactionTemplate(transactionRepository, merchantRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
-        inputTransactionDTO.setTransactionType(TransactionDescriminator.REFUND);
+        inputTransactionDTO.setTransactionType(TransactionDescriminator.REVERSAL);
         inputTransactionDTO.setReferencedTransactionId(UUID.randomUUID());
         Merchant merchant = new Merchant();
         var exception = Assertions.assertThrows(InvalidInputDataException.class, () -> tested.execute(inputTransactionDTO, merchant));
@@ -53,9 +54,9 @@ class RefundTransactionTemplateTest {
 
     @Test
     void execute_noReferentTransaction_Exception() {
-        tested = new RefundTransactionTemplate(transactionRepository, merchantRepository);
+        tested = new ReversalTransactionTemplate(transactionRepository, merchantRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
-        inputTransactionDTO.setTransactionType(TransactionDescriminator.REFUND);
+        inputTransactionDTO.setTransactionType(TransactionDescriminator.REVERSAL);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
         Merchant merchant = new Merchant();
         var exception = Assertions.assertThrows(InvalidInputDataException.class, () -> tested.execute(inputTransactionDTO, merchant));
@@ -64,10 +65,9 @@ class RefundTransactionTemplateTest {
 
     @Test
     void execute_largerAmountThanCharge_Exception() {
-        tested = new RefundTransactionTemplate(transactionRepository, merchantRepository);
-        tested = new RefundTransactionTemplate(transactionRepository, merchantRepository);
+        tested = new ReversalTransactionTemplate(transactionRepository, merchantRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
-        inputTransactionDTO.setTransactionType(TransactionDescriminator.REFUND);
+        inputTransactionDTO.setTransactionType(TransactionDescriminator.REVERSAL);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
         UUID referenceTransactionId = UUID.randomUUID();
         inputTransactionDTO.setReferencedTransactionId(referenceTransactionId);
@@ -83,24 +83,23 @@ class RefundTransactionTemplateTest {
     }
     @Test
     void validate_withAmount_ok() {
-        tested = new RefundTransactionTemplate(transactionRepository, merchantRepository);
+        tested = new ReversalTransactionTemplate(transactionRepository, merchantRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
-        inputTransactionDTO.setTransactionType(TransactionDescriminator.REFUND);
+        inputTransactionDTO.setTransactionType(TransactionDescriminator.REVERSAL);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
         UUID referenceTransactionId = UUID.randomUUID();
         inputTransactionDTO.setReferencedTransactionId(referenceTransactionId);
         Merchant merchant = new Merchant();
         merchant.setId(UUID.randomUUID());
-        ChargeTransaction chargeTransaction = new ChargeTransaction();
-        chargeTransaction.setRefundedAmount(new BigDecimal(0));
-        chargeTransaction.setAmount(new BigDecimal(1000));
-        chargeTransaction.setMerchant(merchant);
-        chargeTransaction.setId(referenceTransactionId);
-        Mockito.when(transactionRepository.fetch(referenceTransactionId)).thenReturn(chargeTransaction);
+        AuthorizeTransaction authorizeTransaction = new AuthorizeTransaction();
+        authorizeTransaction.setAmount(new BigDecimal(1000));
+        authorizeTransaction.setMerchant(merchant);
+        authorizeTransaction.setStatus(TransactionStatus.APPROVED);
+        authorizeTransaction.setId(referenceTransactionId);
+        Mockito.when(transactionRepository.fetch(referenceTransactionId)).thenReturn(authorizeTransaction);
         var result = tested.execute(inputTransactionDTO, merchant);
-        Mockito.verify(transactionRepository).save(any(RefundTransaction.class));
-        Assertions.assertEquals(result.getAmount(), new BigDecimal(1000));
-        Mockito.verify(merchantRepository).updateMerchantTotalSumBy(any(Merchant.class), eq(new BigDecimal(-1000)));
+        Mockito.verify(transactionRepository).save(any(ReversalTransaction.class));
+        Mockito.verify(merchantRepository, Mockito.never()).updateMerchantTotalSumBy(any(Merchant.class), eq(new BigDecimal(-1000)));
     }
 
 }

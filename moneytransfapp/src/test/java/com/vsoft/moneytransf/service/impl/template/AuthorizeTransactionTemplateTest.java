@@ -19,10 +19,10 @@ import java.math.BigDecimal;
 
 import static org.mockito.ArgumentMatchers.any;
 
-class ChargeTransactionTemplateTest {
+class AuthorizeTransactionTemplateTest {
 
 
-    ChargeTransactionTemplate tested;
+    AuthorizeTransactionTemplate tested;
 
     AutoCloseable openMocks;
 
@@ -43,7 +43,7 @@ class ChargeTransactionTemplateTest {
 
     @Test
     void execute_noAmount_Exception() {
-        tested = new ChargeTransactionTemplate(transactionRepository, merchantRepository);
+        tested = new AuthorizeTransactionTemplate(transactionRepository, merchantRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         inputTransactionDTO.setTransactionType(TransactionDescriminator.CHARGE);
         Merchant merchant = new Merchant();
@@ -53,7 +53,7 @@ class ChargeTransactionTemplateTest {
 
     @Test
     void validate_withAmount_ok() {
-        tested = new ChargeTransactionTemplate(transactionRepository, merchantRepository);
+        tested = new AuthorizeTransactionTemplate(transactionRepository, merchantRepository);
         InputTransactionDTO inputTransactionDTO = new InputTransactionDTO();
         inputTransactionDTO.setTransactionType(TransactionDescriminator.CHARGE);
         inputTransactionDTO.setAmount(new BigDecimal(1000));
@@ -61,7 +61,7 @@ class ChargeTransactionTemplateTest {
         var result = tested.execute(inputTransactionDTO, merchant);
         Mockito.verify(transactionRepository).save(any(Transaction.class));
         Assertions.assertEquals(result.getAmount(), new BigDecimal(1000));
-        Mockito.verify(merchantRepository).updateMerchantTotalSumBy(merchant, new BigDecimal(1000));
+        Mockito.verify(merchantRepository, Mockito.never()).updateMerchantTotalSumBy(any(Merchant.class), any(BigDecimal.class));
     }
 
 }

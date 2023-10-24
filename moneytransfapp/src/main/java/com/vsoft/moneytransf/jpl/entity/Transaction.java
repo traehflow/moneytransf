@@ -3,15 +3,13 @@ package com.vsoft.moneytransf.jpl.entity;
 import com.vsoft.moneytransf.TransactionStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
-import lombok.Data;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
+@Generated
 @Getter
 @Setter
 @NoArgsConstructor

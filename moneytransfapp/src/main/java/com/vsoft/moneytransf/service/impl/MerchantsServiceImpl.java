@@ -10,6 +10,7 @@ import com.vsoft.moneytransf.jpl.MerchantRepository;
 import com.vsoft.moneytransf.jpl.entity.MerchRepostitory;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.service.MerchantsService;
+import org.apache.commons.validator.EmailValidator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +40,9 @@ public class MerchantsServiceImpl implements MerchantsService {
                 merchant.setName(line[0]);
                 merchant.setDescription(line[1]);
                 merchant.setEmail(line[2]);
+                if(!EmailValidator.getInstance().isValid(merchant.getEmail())) {
+                    throw new CsvValidationException("Invalid Merchant email");
+                }
                 try {
                     merchant.setStatus(MerchantStatus.valueOf(line[3]));
                 } catch (IllegalArgumentException e) {

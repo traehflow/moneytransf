@@ -5,11 +5,11 @@ import com.vsoft.moneytransf.dto.*;
 import com.vsoft.moneytransf.exception.InvalidInputDataException;
 import com.vsoft.moneytransf.exception.MerchantNotFoundException;
 import com.vsoft.moneytransf.jpl.MerchantRepository;
-import com.vsoft.moneytransf.jpl.TransactionRepository;
 import com.vsoft.moneytransf.jpl.entity.*;
+import com.vsoft.moneytransf.service.TransactionTemplate;
 import com.vsoft.moneytransf.service.TransactionsService;
-import com.vsoft.moneytransf.service.impl.template.*;
 import jakarta.transaction.Transactional;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -21,13 +21,13 @@ public class TransactionsServiceImpl implements TransactionsService {
 
     private final Map<TransactionDescriminator, TransactionTemplate> templates;
     public TransactionsServiceImpl(MerchantRepository merchantRepository,
-                                   ChargeTransactionTemplate chargeTransactionTemplate,
-                                   ReversalTransactionTemplate reversalTransactionTemplate,
-                                   RefundTransactionTemplate refundTransactionTemplatem,
-                                   AuthorizeTransactionTemplate authorizeTransactionTemplate) {
+                                   TransactionTemplate chargeTransactionTemplate,
+                                   TransactionTemplate reversalTransactionTemplate,
+                                   TransactionTemplate refundTransactionTemplate,
+                                   TransactionTemplate authorizeTransactionTemplate) {
         this.merchantRepository = merchantRepository;
         templates = Map.of(TransactionDescriminator.CHARGE, chargeTransactionTemplate,
-                TransactionDescriminator.REFUND, refundTransactionTemplatem,
+                TransactionDescriminator.REFUND, refundTransactionTemplate,
                 TransactionDescriminator.AUTHORIZE, authorizeTransactionTemplate,
                 TransactionDescriminator.REVERSAL, reversalTransactionTemplate);
     }
