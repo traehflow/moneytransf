@@ -26,7 +26,6 @@ import static org.mockito.ArgumentMatchers.any;
 class ChargeTransactionTemplateTest {
 
 
-    public static final String MERCHANT_MAIL = "tester@merchant.com";
     ChargeTransactionTemplate tested;
 
     AutoCloseable openMocks;
@@ -68,8 +67,5 @@ class ChargeTransactionTemplateTest {
         Assertions.assertEquals(result.getAmount(), new BigDecimal(1000));
         Mockito.verify(merchantRepository).updateMerchantTotalSumBy(merchant, new BigDecimal(1000));
     }
-
-
-
 
 }

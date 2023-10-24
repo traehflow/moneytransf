@@ -1,0 +1,11 @@
+--2023-10-21 20:33:20--  https://apt.corretto.aws/corretto.key
+Resolving apt.corretto.aws (apt.corretto.aws)... 18.66.97.3, 18.66.97.30, 18.66.97.53, ...
+Connecting to apt.corretto.aws (apt.corretto.aws)|18.66.97.3|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: 1695 (1,7K) [binary/octet-stream]
+Saving to: ‘STDOUT’
+
+-                                       0%[                                                                        ]       0  --.-KB/s               -                                       0%[                                                                        ]       0  --.-KB/s    in 0s      
+
+
+Cannot write to ‘-’ (Success).
