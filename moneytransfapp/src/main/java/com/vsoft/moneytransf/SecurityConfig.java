@@ -27,7 +27,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests((authorizeHttpRequests) ->
                         authorizeHttpRequests
-                                .requestMatchers("/**").hasAnyRole(new String[]{Roles.MERCHANT, Roles.USER, Roles.ADMIN})
+                                .requestMatchers("/**").hasAnyRole(new String[]{Roles.MERCHANT, Roles.ADMIN})
                                 .requestMatchers(HttpMethod.POST, "/import/merchants").hasAnyRole(new String[]{Roles.ADMIN, Roles.MERCHANT})
 
                 )
@@ -46,19 +46,19 @@ public class SecurityConfig {
         UserDetails admin = User.withDefaultPasswordEncoder()
                 .username("admin")
                 .password("password")
-                .roles(Roles.ADMIN, Roles.USER)
+                .roles(Roles.ADMIN)
                 .build();
 
         UserDetails merchant1 = User.withDefaultPasswordEncoder()
                 .username("johnwill@merchant.com")
                 .password("password")
-                .roles(Roles.USER, Roles.MERCHANT)
+                .roles(Roles.MERCHANT)
                 .build();
 
         UserDetails merchant2 = User.withDefaultPasswordEncoder()
                 .username("petersecada@merchant.com")
                 .password("password")
-                .roles(Roles.USER, Roles.MERCHANT)
+                .roles(Roles.MERCHANT)
                 .build();
 
         return new InMemoryUserDetailsManager(admin, merchant1, merchant2);
