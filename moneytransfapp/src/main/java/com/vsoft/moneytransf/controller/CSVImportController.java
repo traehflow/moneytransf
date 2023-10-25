@@ -9,10 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 
@@ -28,12 +26,12 @@ public class CSVImportController {
 
     @Operation(summary = "Import data from csv input", description = "Here's how input line is looking like: \n name,description,email,ENABLED/DISABLED")
     @PostMapping("/merchants")
-    @Secured(Roles.ROLE_PREFIX + Roles.MERCHANT)
-    public ResponseEntity<String> importMerchants(@RequestBody String csvData) {
+    @Secured(Roles.ROLE_PREFIX + Roles.ADMIN)
+    public ResponseEntity<String> importMerchants(@RequestParam("csvFile") MultipartFile csvFile) {
         try {
             Authentication auth = SecurityContextHolder.getContext().getAuthentication();
             System.out.println(auth);
-                merchantsService.importMerchant(csvData);
+                merchantsService.importMerchant(csvFile.getInputStream());
         } catch (IOException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body("Error processing CSV data");

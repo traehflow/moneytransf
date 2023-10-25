@@ -16,7 +16,7 @@ import java.util.List;
 
 @Configuration
 public class SwaggerConfig {
-    @Bean
+   @Bean
     public Docket postsApi() {
 
         return new Docket(DocumentationType.SWAGGER_2).groupName("public-api")

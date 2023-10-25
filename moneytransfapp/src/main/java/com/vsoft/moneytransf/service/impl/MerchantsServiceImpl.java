@@ -14,8 +14,7 @@ import org.apache.commons.validator.EmailValidator;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 
-import java.io.IOException;
-import java.io.StringReader;
+import java.io.*;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,13 +23,15 @@ public class MerchantsServiceImpl implements MerchantsService {
 
     private final MerchantRepository merchantRepository;
     private final MerchRepostitory merchRepostitory;
+    private List<Merchant> all;
+
     public MerchantsServiceImpl(MerchantRepository merchantRepository, MerchRepostitory merchRepostitory) {
         this.merchantRepository = merchantRepository;
         this.merchRepostitory = merchRepostitory;
     }
 
-    public void importMerchant(String csvData) throws CsvValidationException, IOException {
-        try (CSVReader reader = new CSVReaderBuilder(new StringReader(csvData)).build()) {
+    public void importMerchant(InputStream csvData) throws CsvValidationException, IOException {
+        try (CSVReader reader = new CSVReaderBuilder(new BufferedReader(new InputStreamReader(csvData))).build()) {
             String[] line;
             while ((line = reader.readNext()) != null) {
                 if(line.length <4) {
@@ -60,7 +61,7 @@ public class MerchantsServiceImpl implements MerchantsService {
     }
 
     public List<Merchant> listAll(){
-        return merchRepostitory.findAll();
+        return all;
     }
 
     public Merchant getByEmail(String email) {

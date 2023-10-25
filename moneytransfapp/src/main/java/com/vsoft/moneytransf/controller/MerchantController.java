@@ -6,8 +6,11 @@ import com.vsoft.moneytransf.dto.MerchantDTO;
 import com.vsoft.moneytransf.jpl.entity.Merchant;
 import com.vsoft.moneytransf.service.MerchantsService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.List;
 import java.util.UUID;
@@ -28,7 +31,13 @@ public class MerchantController {
 
     @GetMapping()
     public List<Merchant> list() {
-        return merchantsService.listAll();
+        if(userProfile.isMerchant()) {
+            return List.of(merchantsService.getByEmail(userProfile.getUserName()));
+        }
+        if(userProfile.isAdmin()) {
+            return merchantsService.listAll();
+        }
+        throw new HttpClientErrorException(HttpStatus.FORBIDDEN);
     }
 
     @Secured(Roles.ROLE_PREFIX + Roles.ADMIN)

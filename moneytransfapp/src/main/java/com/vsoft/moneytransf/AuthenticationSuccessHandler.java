@@ -26,14 +26,23 @@ public class AuthenticationSuccessHandler implements org.springframework.securit
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        Merchant merchant = merchantRepository.getByEmail(authentication.getName());
-        if(merchant == null) {
-            merchant = new Merchant();
-            merchant.setName(authentication.getName());
-            merchant.setEmail(authentication.getName());
-            merchant.setDescription("Automatically generated");
-            merchant.setStatus(MerchantStatus.ENABLED);
-            merchantRepository.save(merchant);
+        if(authentication.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals(("ROLE_MERCHANT")))){
+            Merchant merchant = merchantRepository.getByEmail(authentication.getName());
+            if(merchant == null) {
+                merchant = new Merchant();
+                merchant.setName(authentication.getName());
+                merchant.setEmail(authentication.getName());
+                merchant.setDescription("Automatically generated");
+                merchant.setStatus(MerchantStatus.ENABLED);
+                merchantRepository.save(merchant);
+            }
+            response.sendRedirect("/transactionform.html");
+
+        }
+
+        if(authentication.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals(("ROLE_ADMIN")))){
+            response.sendRedirect("/adminpage.html");
+
         }
     }
 }

@@ -32,10 +32,11 @@ public class TransactionRepository {
         Query query;
         String select;
         if (descriminator == null) {
+            //I didn't tested it
             query = entityManager.createQuery("SELECT t from Transaction t where t.merchant = :merchant");
             query.setParameter("merchant", merchant);
         } else {
-            select = "SELECT new com.vsoft.moneytransf.dto.TransactionDTO(t.timestamp, t.id, t.status, " + switch (descriminator) {
+            select = "SELECT new com.vsoft.moneytransf.dto.TransactionDTO(t.timestamp, t.id, t.status, t.customerEmail, " + switch (descriminator) {
                 case AUTHORIZE -> "t.amount) from AuthorizeTransaction t ";
                 case REVERSAL -> "t.referencedTransaction.id) from ReversalTransaction t ";
                 case CHARGE ->  "t.amount) from ChargeTransaction t ";

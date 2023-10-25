@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Merchant List</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <form id="uploadForm" enctype="multipart/form-data">
+        <div class="form-group">
+            <label for="csvFile">Upload CSV File:</label>
+            <input type="file" class="form-control-file" id="csvFile" accept=".csv">
+        </div>
+        <button type="button" id="uploadButton" class="btn btn-primary">Upload</button>
+    </form>
+    <h2>Merchant List</h2>
+    <table class="table table-bordered">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Total Transaction Sum</th>
+        </tr>
+        </thead>
+        <tbody id="merchantTableBody"></tbody>
+    </table>
+</div>
+
+
+<script>
+    async function fetchMerchants() {
+     try {
+         const response = await fetch('/merchants/');
+         const data = await response.json();
+         const tableBody = document.getElementById('merchantTableBody');
+         data.forEach(merchant => {
+             const row = document.createElement('tr');
+             row.innerHTML = `
+                 <td>${merchant.id}</td>
+                 <td>${merchant.name}</td>
+                 <td>${merchant.description}</td>
+                 <td>${merchant.email}</td>
+                 <td>${merchant.status}</td>
+                 <td>${merchant.totalTransactionSum}</td>
+             `;
+             tableBody.appendChild(row);
+         });
+     } catch (error) {
+         console.error('Error fetching data:', error);
+     }
+ }
+
+window.onload = fetchMerchants;
+const csvFileInput = document.getElementById('csvFile');
+const uploadButton = document.getElementById('uploadButton');
+
+uploadButton.addEventListener('click', async function () {
+ const formData = new FormData();
+ formData.append('csvFile', csvFileInput.files[0]);
+
+ try {
+     const response = await fetch('/import/merchants', {
+         method: 'POST',
+         body: formData,
+     });
+
+     if (response.ok) {
+         alert('CSV file uploaded successfully!');
+         location.reload();
+     } else {
+         alert('Upload failed. Please try again.');
+     }
+ } catch (error) {
+     console.error('Error uploading CSV:', error);
+ }
+});
+</script>
+
+</body>
+</html>

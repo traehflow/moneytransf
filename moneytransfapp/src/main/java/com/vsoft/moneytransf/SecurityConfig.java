@@ -31,9 +31,16 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.POST, "/import/merchants").hasAnyRole(new String[]{Roles.ADMIN, Roles.MERCHANT})
 
                 )
-                //.formLogin(Customizer.withDefaults())
+
                 .formLogin( x -> {
+                    x.defaultSuccessUrl("/transactionform.html", true);
+
+                    x.loginPage("/login.html").permitAll();
+                    x.loginProcessingUrl("/perform_login");
                     x.successHandler(customLoginSuccessHandler);
+                    //x.defaultSuccessUrl("/transactionform.html", true);
+                    x.failureUrl("/login.html?error=true");
+
 
                 })
                 //.successHandler(customLoginSuccessHandler)
@@ -68,8 +75,6 @@ public class SecurityConfig {
     @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
     public UserProfile getUser(HttpServletRequest request) {
         UserProfile userProfile = new UserProfile();
-        System.out.println("User principal: ");
-        System.out.println(request.getUserPrincipal());
         var principal = request.getUserPrincipal();
         if (principal instanceof UsernamePasswordAuthenticationToken token) {
             userProfile.setAdmin(token.getAuthorities().stream().anyMatch(x -> x.getAuthority().equals(Roles.ROLE_PREFIX + Roles.ADMIN)));
