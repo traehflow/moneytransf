@@ -48,23 +48,23 @@ public class TransactionsIntegrationTest {
         String password = "password";
 
         ResponseEntity<String> response = restTemplate.postForEntity(
-                "/login?username={username}&password={password}", null, String.class, username, password);
+                "/perform_login?username=johnwill@merchant.com&password=password", null, String.class);
 
-        assertEquals(HttpStatus.OK, response.getStatusCode());
+        assertEquals(HttpStatus.FOUND, response.getStatusCode());
 
 
-        String cookies = response.getHeaders().get("Set-Cookie").get(0);
+        List<String> cookies = response.getHeaders().get("Set-Cookie");
         MerchantDTO merchantDTO = new MerchantDTO();
         merchantDTO.setEmail("johnwill@merchant.com");
         merchantDTO.setName("name");
         merchantDTO.setDescription("description");
         merchantDTO.setStatus(MerchantStatus.ENABLED);
         MultiValueMap<String, String> headers = new LinkedMultiValueMap();
-        headers.put("Cookie", List.of( cookies));
+        headers.put("Cookie", cookies);
 
 
         ResponseEntity<List<Merchant>> merchantsResponse = restTemplate.exchange(
-                "/merchants/", HttpMethod.GET, new HttpEntity(merchantDTO, headers), new ParameterizedTypeReference<List<Merchant>>() {
+                "/merchants/", HttpMethod.GET, new HttpEntity(headers), new ParameterizedTypeReference<List<Merchant>>() {
                 });
 
 

@@ -16,7 +16,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -50,7 +52,7 @@ class MerchantsServiceImplTest {
     @Test
     void importMerchant_invalidStatus_CsvValidationException() throws CsvValidationException, IOException {
         var exception = Assertions.assertThrows(CsvValidationException.class, () ->
-          tested.importMerchant("name,description,merchant@merchant.com,ACTIVE\nname,description")
+          tested.importMerchant(new ByteArrayInputStream("name,description,merchant@merchant.com,ACTIVE\nname,description".getBytes(StandardCharsets.UTF_8)))
         );
         Assertions.assertNotNull(exception);
     }
@@ -58,7 +60,7 @@ class MerchantsServiceImplTest {
     @Test
     void importMerchant_incompleteLine_CsvValidationException() throws CsvValidationException, IOException {
         var exception = Assertions.assertThrows(CsvValidationException.class, () ->
-                tested.importMerchant("name,description,merchant@merchant.com,ENABLED\nname,description")
+                tested.importMerchant(new ByteArrayInputStream("name,description,merchant@merchant.com,ENABLED\nname,description".getBytes(StandardCharsets.UTF_8)))
         );
         Assertions.assertNotNull(exception);
     }
@@ -66,28 +68,21 @@ class MerchantsServiceImplTest {
     @Test
     void importMerchant_invalidEmail_CsvValidationException() throws CsvValidationException, IOException {
         var exception = Assertions.assertThrows(CsvValidationException.class, () ->
-                tested.importMerchant("name,description,merchant@merchant.com,ENABLED\nname,description,notemail,ENABLED")
+                tested.importMerchant(new ByteArrayInputStream("name,description,merchant@merchant.com,ENABLED\nname,description,notemail,ENABLED".getBytes(StandardCharsets.UTF_8)))
         );
         Assertions.assertNotNull(exception);
     }
 
     @Test
     void importMerchant_ok_saved() throws CsvValidationException, IOException {
-        tested.importMerchant("name,description,merchant@merchant.com,ENABLED\nsecondName,seconddescription,second_merchant@merchant.com,ENABLED");
+        tested.importMerchant(new ByteArrayInputStream("name,description,merchant@merchant.com,ENABLED\nsecondName,seconddescription,second_merchant@merchant.com,ENABLED".getBytes(StandardCharsets.UTF_8)));
         Mockito.verify(merchantRepository, times(2)).save(any(Merchant.class));
     }
     @Test
     void listAll() {
     }
 
-    @Test
-    void getByEmail() {
-    }
 
-    @Test
-    void update() {
-
-    }
 
     @Test
     void updateByEmail_merchantDTOonlyWithDescription_OnlyDescriptionChanged() {

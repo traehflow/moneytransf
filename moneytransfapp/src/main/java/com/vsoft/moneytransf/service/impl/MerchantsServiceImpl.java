@@ -23,7 +23,6 @@ public class MerchantsServiceImpl implements MerchantsService {
 
     private final MerchantRepository merchantRepository;
     private final MerchRepostitory merchRepostitory;
-    private List<Merchant> all;
 
     public MerchantsServiceImpl(MerchantRepository merchantRepository, MerchRepostitory merchRepostitory) {
         this.merchantRepository = merchantRepository;
@@ -61,7 +60,7 @@ public class MerchantsServiceImpl implements MerchantsService {
     }
 
     public List<Merchant> listAll(){
-        return all;
+        return merchRepostitory.findAll();
     }
 
     public Merchant getByEmail(String email) {
