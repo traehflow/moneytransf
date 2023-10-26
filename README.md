@@ -22,6 +22,7 @@ ENABLED or DISABLED is whether the merchant is enabled or disabled. Disabled mer
  - UPDATE /merchants/ - Update currently logged merchant. MERCHANT role is required for this endpoint.
  - DELETE /transactions/forceClean?millisAgo=number - cleans all transactions except those before millisAgo milliseconds.
  - DELETE /transactions/ - Forces transaction deletion task. ADMIN role is required
+ - GET /transactions/ - get list of all transactions for the current MERCHANT. Optional argument descriminator will filter them by transaction type.
  - POST /transactions/ - Performs a transaction. MERCHANT role is required.
 
 #### POST transaction body is looking like this:
@@ -33,6 +34,39 @@ ENABLED or DISABLED is whether the merchant is enabled or disabled. Disabled mer
 "customerPhone": "string@abv.bg",
 "referencedTransactionId": "649a7aaf-e334-4a74-a3cf-73783f1f9e13"
 }
+```
+
+#### GET /transactions/ result looks like:
+```JSON
+[
+  {
+    "id": "2b4c1f22-ff0d-4994-b1c4-47b182f8e140",
+    "customerEmail": "customer@gfail.com",
+    "referencedTransactionId": null,
+    "amount": 1000,
+    "status": "APPROVED",
+    "type": "AUTHORIZE",
+    "timestamp": 1698326153342
+  },
+  {
+    "id": "932ce9ec-026c-472a-881c-515cd4f807eb",
+    "customerEmail": "customer@gfail.com",
+    "referencedTransactionId": null,
+    "amount": 10000,
+    "status": "REFUNDED",
+    "type": "CHARGE",
+    "timestamp": 1698326160758
+  },
+  {
+    "id": "8b035f10-fe96-4c4f-aa9e-f39b192e0bd8",
+    "customerEmail": "customer@gfail.com",
+    "referencedTransactionId": null,
+    "amount": 1500,
+    "status": "APPROVED",
+    "type": "CHARGE",
+    "timestamp": 1698326165864
+  }
+]
 ```
 #### transaction type can be four types: 
  - AUTHORIZE - Hold customer's amount
@@ -67,3 +101,7 @@ Current application has one hardcoded admin and two hardcoded merchants
 For this implementation, merchant's username is his mail and is used to register into the merchants table.
 Endpoints are accessible from the swagger interface which can be accessed by http://localhost:8080/swagger-ui.html
 Also login UI is provided by swagger. Opening it will ask first for credentials.
+
+# User interface
+
+I've added user interface. After starting the app, http://localhost:8080/login.html is the login page. After logging, depending on the user type, user is redirected to admin or transactions page,
