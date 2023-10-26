@@ -52,6 +52,10 @@ public class TransactionsServiceImpl implements TransactionsService {
     @Override
     public List<TransactionDTO> list(TransactionDescriminator descriminator, String userName) {
         Merchant merchant = merchantRepository.getByEmail(userName);
-        return transactionRepository.list(descriminator, merchant);
+        if(descriminator == null) {
+            return transactionRepository.list(merchant);
+        } else {
+            return transactionRepository.list(descriminator, merchant);
+        }
     }
 }

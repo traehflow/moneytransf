@@ -1,6 +1,7 @@
 package com.vsoft.moneytransf.dto;
 
 import com.vsoft.moneytransf.TransactionStatus;
+import com.vsoft.moneytransf.jpl.entity.TransactionDescriminator;
 import lombok.Data;
 import lombok.Generated;
 
@@ -15,6 +16,7 @@ public class TransactionDTO {
     UUID referencedTransactionId;
     BigDecimal amount;
     TransactionStatus status;
+    TransactionDescriminator type;
     long timestamp;
 
     public TransactionDTO(long timestamp, UUID id, TransactionStatus status, String customerEmail, UUID referencedTransactionId, BigDecimal amount) {

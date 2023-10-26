@@ -1,6 +1,7 @@
 package com.vsoft.moneytransf.jpl.entity;
 
 import com.vsoft.moneytransf.TransactionStatus;
+import com.vsoft.moneytransf.dto.TransactionDTO;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @DiscriminatorColumn(name="transaction_type",
         discriminatorType=DiscriminatorType.STRING
 )
-public class Transaction {
+public abstract class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
@@ -47,5 +48,7 @@ public class Transaction {
     protected void onCreate() {
         timestamp = System.currentTimeMillis();
     }
+
+    public abstract TransactionDTO toDTO();
 
 }

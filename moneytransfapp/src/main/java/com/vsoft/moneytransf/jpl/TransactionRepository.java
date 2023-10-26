@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Repository
 public class TransactionRepository {
@@ -30,22 +31,24 @@ public class TransactionRepository {
     @Transactional
     public List<TransactionDTO> list(TransactionDescriminator descriminator, Merchant merchant) {
         Query query;
-        String select;
-        if (descriminator == null) {
-            //I didn't tested it
-            query = entityManager.createQuery("SELECT t from Transaction t where t.merchant = :merchant");
-            query.setParameter("merchant", merchant);
-        } else {
-            select = "SELECT new com.vsoft.moneytransf.dto.TransactionDTO(t.timestamp, t.id, t.status, t.customerEmail, " + switch (descriminator) {
-                case AUTHORIZE -> "t.amount) from AuthorizeTransaction t ";
-                case REVERSAL -> "t.referencedTransaction.id) from ReversalTransaction t ";
-                case CHARGE ->  "t.amount) from ChargeTransaction t ";
-                case REFUND -> "t.referencedTransaction.id, t.amount) from RefundTransaction t ";
-            } + " WHERE t.merchant = :merchant";
-            query = entityManager.createQuery(select);
-            query.setParameter("merchant", merchant);
-        }
+        String select = "SELECT new com.vsoft.moneytransf.dto.TransactionDTO(t.timestamp, t.id, t.status, t.customerEmail, " + switch (descriminator) {
+            case AUTHORIZE -> "t.amount) from AuthorizeTransaction t ";
+            case REVERSAL -> "t.referencedTransaction.id) from ReversalTransaction t ";
+            case CHARGE ->  "t.amount) from ChargeTransaction t ";
+            case REFUND -> "t.referencedTransaction.id, t.amount) from RefundTransaction t ";
+        } + " WHERE t.merchant = :merchant";
+        query = entityManager.createQuery(select);
+        query.setParameter("merchant", merchant);
         return query.getResultList();
+    }
+
+    @Transactional
+    public List<TransactionDTO> list(Merchant merchant) {
+        Query query;
+
+            query = entityManager.createQuery("SELECT t from Transaction t where t.merchant = :merchant order by timestamp");
+            query.setParameter("merchant", merchant);
+        return (List<TransactionDTO>) query.getResultList().stream().map(x -> ((Transaction)x).toDTO()).collect(Collectors.toList());
     }
 
     @Transactional
