@@ -43,6 +43,7 @@ public class SecurityConfig {
 
 
                 })
+                .logout(x -> x.logoutUrl("/perform_logout"))
                 //.successHandler(customLoginSuccessHandler)
                 .build();
     }
