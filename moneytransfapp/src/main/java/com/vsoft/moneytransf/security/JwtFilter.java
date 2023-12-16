@@ -46,7 +46,7 @@ public class JwtFilter extends OncePerRequestFilter {
             }
         } else {
             System.out.println("Bearer String not found in token");
-            filterChain.doFilter(request, response);  		// If not valid, go to the next filter.
+            filterChain.doFilter(request, response);
             return;
         }
         if (null != username &&SecurityContextHolder.getContext().getAuthentication() == null) {

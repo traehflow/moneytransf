@@ -60,8 +60,6 @@ public class SecurityConfig {
                     x.loginProcessingUrl("/perform_login");
                     x.successHandler(customLoginSuccessHandler);
                     x.failureUrl("/login.html?error=true");
-
-
                 })
                 .logout(x -> x.logoutUrl("/perform_logout"))
                 .exceptionHandling(h ->h.authenticationEntryPoint(authenticationEntryPoint))
